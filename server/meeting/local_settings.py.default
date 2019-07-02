@@ -1,0 +1,23 @@
+# encoding: utf-8
+from __future__ import absolute_import, unicode_literals
+
+SECRET_KEY = 'input your secret key'
+
+REDIS_HOST = '127.0.0.1'
+REDIS_PASSWORD = ''
+REDIS_PORT = '6379'
+REDIS_CACHE_DB = 5
+REDIS_SESSION_DB = 6
+REDIS_CELERY_DB = 7
+REDIS_CONSTANCE_DB = 8
+
+# CREATE SCHEMA `meeting` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
+
+MYSQL_HOST = '127.0.0.1'
+MYSQL_PORT = '3306'
+MYSQL_DBNAME = 'meeting'
+MYSQL_USERNAME = 'root'
+MYSQL_PASSWORD = ''
+
+WECHAT_APPID = '小程序appid'
+WECHAT_APPSECRET = '小程序appsecret'

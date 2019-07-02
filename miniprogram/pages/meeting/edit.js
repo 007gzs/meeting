@@ -1,0 +1,143 @@
+"use strict";
+// pages/meeting/edit.js
+const app = getApp()
+Page({
+
+  /**
+   * 页面的初始数据
+   */
+  data: {
+    meeting_id: 0,
+    room_id: 0,
+    date: "",
+    start_time: "",
+    end_time: "",
+    room: {},
+    name: "",
+    description: ""
+  },
+  bindKeyInput(e) {
+    this.data[e.currentTarget.dataset.obj] = e.detail.value
+  },
+  refresh: function(){
+    if(this.data.meeting_id > 0){
+      app.api.api_meeting_info({meeting_id: this.data.meeting_id}).then(res => {
+        this.setData({
+          date: res.date,
+          start_time: res.start_time,
+          end_time: res.end_time,
+          room: res.room,
+          name: res.name,
+          description: res.description
+        })
+      })
+    }else{
+      app.api.api_meeting_room_info({ room_id: this.data.room_id }).then(res => {
+        this.setData({ room: res })
+      })
+    }
+  },
+  save: function(){
+    if (this.data.meeting_id <= 0) {
+      app.api.api_meeting_reserve({
+        room_id: this.data.room_id, 
+        name: this.data.name, 
+        description: this.data.description, 
+        date: this.data.date, 
+        start_time: this.data.start_time, 
+        end_time: this.data.end_time
+      }).then(res => {
+        wx.redirectTo({
+          url: "detail?meeting_id="+res.id
+        })
+      })
+    }else{
+      app.api.api_meeting_edit({
+        meeting_id: this.data.meeting_id,
+        name: this.data.name,
+        description: this.data.description
+      }).then(res => {
+        wx.navigateBack()
+      })
+    }
+  },
+  /**
+   * 生命周期函数--监听页面加载
+   */
+  onLoad: function (options) {
+    let meeting_id = options.meeting_id
+    if(meeting_id){
+      this.setData({meeting_id: parseInt(meeting_id)})
+      return
+    }
+    let room_id = options.room_id
+    if (room_id){
+      room_id = parseInt(room_id)
+    }else{
+      room_id = 0
+    }
+    let start_time = options.start_time
+    let end_time = options.end_time
+    let date = options.date
+    if (room_id <= 0 || !start_time || !end_time || !date){
+      wx.showToast({
+        title: '参数错误',
+        icon: 'none'
+      })
+      wx.navigateBack()
+      return
+    }
+
+    this.setData({ room_id: room_id, start_time: start_time, end_time: end_time, date: date })
+    return
+  },
+
+  /**
+   * 生命周期函数--监听页面初次渲染完成
+   */
+  onReady: function () {
+
+  },
+
+  /**
+   * 生命周期函数--监听页面显示
+   */
+  onShow: function () {
+    this.refresh()
+  },
+
+  /**
+   * 生命周期函数--监听页面隐藏
+   */
+  onHide: function () {
+
+  },
+
+  /**
+   * 生命周期函数--监听页面卸载
+   */
+  onUnload: function () {
+
+  },
+
+  /**
+   * 页面相关事件处理函数--监听用户下拉动作
+   */
+  onPullDownRefresh: function () {
+
+  },
+
+  /**
+   * 页面上拉触底事件的处理函数
+   */
+  onReachBottom: function () {
+
+  },
+
+  /**
+   * 用户点击右上角分享
+   */
+  onShareAppMessage: function () {
+
+  }
+})

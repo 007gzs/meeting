@@ -1,0 +1,18 @@
+/* components/date_select.wxss */
+.date_select{
+  display: flex;
+  white-space: nowrap;
+}
+.date_select .box{
+  margin: 5px;
+  text-align: center;
+  font-size: 24rpx;
+  line-height: 32rpx;
+  height: 64rpx;
+  width:64rpx;
+  border:1px solid #ccc;
+  display: inline-block;
+}
+.date_select .box.select{
+  background: #ccc
+}

@@ -1,0 +1,9 @@
+var formatTime = function(s){
+  if(!s){
+    s = ""
+  }
+  return s.length == 8 && s.substring(5, 8) == ":00" ? s.substring(0, 5) : s
+}
+module.exports = {
+  formatTime: formatTime
+}

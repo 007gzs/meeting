@@ -1,0 +1,9 @@
+/* pages/room/detail.wxss */
+.meeting-item{
+  margin-top: 10px
+}
+.footer button {
+  padding:0 1em;
+  font-size: 24rpx;
+  white-space: nowrap;
+}

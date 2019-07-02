@@ -1,0 +1,60 @@
+/* pages/meeting/reserve.wxss */
+.tr{
+  display: flex;
+  flex-direction: row;
+}
+.time_item{
+  height: 32rpx;
+  line-height: 32rpx
+}
+.table {
+  display: table;
+  width: 100%;
+  /* border-collapse 属性设置表格的边框是否被合并为一个单一的边框，解决相邻单元格边框未合并导致有些边框变粗的视觉效果 */
+  border-collapse: collapse;
+  overflow-x: hidden;
+  font-size: 32rpx;
+  line-height: 32rpx;
+}
+
+.table .tr {
+  display: table-row;
+  width: 100%;
+}
+
+.table .th {
+  display: table-cell;
+  font-weight: bold;
+  border: 1px solid black;
+  text-align: center;
+  vertical-align: middle;
+  background-color: #ccc;
+  line-height: 48rpx;
+}
+
+.table .td {
+  display: table-cell;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+  text-align: center;
+  vertical-align: middle;
+}
+.table .td.expire{
+  background-color: #eee;
+}
+.table .td.in_use{
+  background-color: #ccc;
+}
+.table .td.selected{
+  background-color: #cfc;
+}
+.table .td.top{
+  border-top: 1px solid black;
+}
+.table .td.bottom{
+  border-bottom: 1px solid black;
+}
+.label{
+  width: 62rpx;
+  border: 1px solid black;
+}

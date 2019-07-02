@@ -1,0 +1,28 @@
+<!--pages/room/list.wxml-->
+<view class="page">
+  <view class="weui-tab">
+    <view class="weui-navbar">
+      <block wx:for="{{tabs}}" wx:key="*this">
+          <view id="{{index}}" class="weui-navbar__item {{activeIndex == index ? 'weui-bar__item_on' : ''}}" bindtap="tabClick">
+            <view class="weui-navbar__title">{{item}}</view>
+          </view>
+      </block>
+    </view>
+    <view class="weui-tab__panel page__bd_spacing">
+      <view class="weui-tab__content">
+        <view class="weui-panel weui-panel_access">
+          <view class="weui-panel__bd">
+            <block wx:for="{{activeIndex == 0 ? follow_rooms : create_rooms}}" wx:key="id">
+              <view id="{{item.id}}" bindtap='detail' class="weui-media-box weui-media-box_text" hover-class="weui-cell_active">
+                  <view class="weui-media-box__title weui-media-box__title_in-text">{{item.name}}</view>
+                  <view class="weui-media-box__desc">{{item.description}}</view>
+              </view>
+            </block>
+          </view>
+        </view>
+        <button class="weui-btn" type="primary" bindtap="create" hidden="{{activeIndex != 1}}">创建</button>
+        <button class="weui-btn" type="primary" bindtap="reserve" hidden="{{follow_rooms.length == 0 || activeIndex != 0}}">预约</button>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,16 @@
+Pillow
+mysqlclient
+cryptography
+redis
+hiredis
+gevent
+celery
+requests
+django
+django-grappelli
+django-constance
+django-redis-sessions
+django-redis-cache
+djangorestframework
+django-restframework-apiview
+wechatpy

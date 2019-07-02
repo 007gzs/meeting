@@ -1,0 +1,7 @@
+<!--components/date_select.wxml-->
+<scroll-view scroll-x class="date_select">
+  <view class="box {{item.id == select_date ? 'select' : ''}}" wx:for="{{date_range}}" wx:key="id" id="{{item.id}}" bindtap='tap'>
+    <view class="show">{{item.show}}</view>
+    <view class="desc">{{item.desc}}</view>
+  </view>
+</scroll-view>

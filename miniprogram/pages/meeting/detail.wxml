@@ -1,0 +1,49 @@
+<wxs module="timeUtils" src="../../utils/timeUtils.wxs"></wxs>
+<!--pages/meeting/detail.wxml-->
+<view class="page">
+  <view class="page__hd">
+    <view class="page__title">{{info.name}}</view>
+    <view class="page__desc">{{info.description}}</view>
+  </view>
+  <view class="page_bd page__bd_spacing body-with-footer">
+    <view class="weui-cells weui-cells_after-title">
+        <view class="weui-cell">
+            <view class="weui-cell__bd">会议室</view>
+            <view class="weui-cell__ft">{{info.room.name}}</view>
+        </view>
+        <view class="weui-cell">
+            <view class="weui-cell__bd">时间</view>
+            <view class="weui-cell__ft">{{info.date}} {{timeUtils.formatTime(info.start_time)}} - {{timeUtils.formatTime(info.end_time)}}</view>
+        </view>
+        <view class="weui-cell">
+            <view class="weui-cell__bd">发起人</view>
+            <view class="weui-cell__ft"><image src="{{info.user.avatarurl}}" style="margin-right: 10rpx;vertical-align: middle;width:48rpx; height: 48rpx;"></image>{{info.user.nickname}}</view>
+        </view>
+        <view class="weui-cell">
+            <view class="weui-cell__bd">参与人</view>
+            <view class="weui-cell__ft">
+            <block wx:for="{{info.attendees}}" wx:key="id">
+            <image src="{{item.avatarurl}}" style="margin-right: 1rpx;vertical-align: middle;width:32rpx; height: 32rpx;"></image>
+            </block>
+            </view>
+        </view>
+    </view>
+  </view>
+  
+  <view class="weui-footer footer">
+    <view class="weui-flex">
+      <view class="weui-flex__item">
+        <button class="weui-btn" size="mini" bindtap='leave' wx:if="{{joined}}">取消参加</button>
+        <button class="weui-btn" size="mini" bindtap='join' wx:else>参加</button>
+      </view>
+      <block wx:if="{{owner}}">
+        <view class="weui-flex__item">
+          <button class="weui-btn" size="mini" bindtap='edit'>修改</button>
+        </view>
+        <view class="weui-flex__item">
+          <button class="weui-btn" size="mini" bindtap='del'>取消</button>
+        </view>
+      </block>
+    </view>
+  </view>
+</view>

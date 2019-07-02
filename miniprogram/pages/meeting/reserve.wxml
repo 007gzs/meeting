@@ -1,0 +1,46 @@
+<wxs module="check">
+function get_class(room_id, time){
+}
+
+module.exports.get_class = get_class;
+</wxs>
+<!--pages/meeting/reserve.wxml-->
+<view class='page'>
+  <date_select id="date_select" bindchange="date_select_change"></date_select>
+  <view class="table body-with-footer">
+    <view class="tr">
+      <view class="th label" bindtap='add_room'>
+      添加
+      </view>
+      <view class="th" wx:for="{{rooms}}" wx:key="id" id="{{item.id}}" bindtap='room_detail'>
+        <text class="room_name">{{item.name}}</text>
+      </view>
+      <view class="th" wx:if='{{rooms.length == 0}}'>
+      </view>
+    </view>
+    <view class="tr" wx:for="{{time_range}}" wx:key="id">
+      <view class="td label">
+        <view class="time_item">
+        {{item.id}}
+        </view>
+      </view>
+      <view 
+        class="td {{td_data[room.id][item.id].clazz}}"
+        wx:for="{{rooms}}" 
+        wx:key="id" 
+        wx:for-item="room" 
+        bindtap="time_select" 
+        data-room="{{room.id}}" 
+        data-time="{{item.id}}">
+        {{td_data[room.id][item.id].text}}
+      </view>
+      
+      <view class="td" wx:if='{{rooms.length == 0}}'>
+      </view>
+    </view>
+  </view>
+  
+  <view class="weui-footer footer">
+    <button class="weui-btn" type="primary" bindtap="reserve" wx:if="{{select.selected}}">预约{{select.room.name}}({{select.start}}-{{select.end_real}})</button>
+  </view>
+</view>
