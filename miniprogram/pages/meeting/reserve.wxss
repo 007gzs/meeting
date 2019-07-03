@@ -1,7 +1,7 @@
 /* pages/meeting/reserve.wxss */
-.tr{
-  display: flex;
-  flex-direction: row;
+.page_table{
+  margin-left: 5px;
+  margin-right: 5px;
 }
 .time_item{
   height: 32rpx;
@@ -15,6 +15,7 @@
   overflow-x: hidden;
   font-size: 32rpx;
   line-height: 32rpx;
+  border: 1px solid black;
 }
 
 .table .tr {
@@ -30,6 +31,7 @@
   vertical-align: middle;
   background-color: #ccc;
   line-height: 48rpx;
+  height: 48rpx;
 }
 
 .table .td {
@@ -38,6 +40,7 @@
   border-right: 1px solid black;
   text-align: center;
   vertical-align: middle;
+  height: 36rpx;
 }
 .table .td.expire{
   background-color: #eee;
@@ -56,5 +59,4 @@
 }
 .label{
   width: 62rpx;
-  border: 1px solid black;
 }

@@ -49,7 +49,7 @@ Page({
   data: {
     room_ids: "",
     start_time: new Time(7, 0),
-    end_time: new Time(23, 0),
+    end_time: new Time(22, 30),
     setp_minute: 30,
     time_range: [],
     select:{
@@ -331,7 +331,8 @@ Page({
     let time_range = []
     for(let time = start_time; time <= end_time; time += 1800){
       const t = valueToTime(time)
-      time_range.push({id: t.string(2), data: t})
+      const id = t.string(2)
+      time_range.push({ id: id, text: t.minute == 0 ? id: "", data: t})
     }
     this.setData({ room_ids: room_ids, time_range: time_range })
     this.refresh()

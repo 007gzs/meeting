@@ -7,11 +7,18 @@
   margin: 5px;
   text-align: center;
   font-size: 24rpx;
-  line-height: 32rpx;
-  height: 64rpx;
-  width:64rpx;
+  line-height: 48rpx;
+  height: 96rpx;
+  width: 96rpx;
   border:1px solid #ccc;
   display: inline-block;
+}
+
+.date_select .box .show{
+  font-size: 32rpx;
+}
+.date_select .box .desc{
+  font-size: 24rpx;
 }
 .date_select .box.select{
   background: #ccc
