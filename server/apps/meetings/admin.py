@@ -5,7 +5,11 @@ from core import utils
 
 from . import models
 
-utils.site_register(models.Room, editable=False, addable=False, changeable=False)
-utils.site_register(models.UserFollowRoom, editable=False, addable=False, changeable=False)
-utils.site_register(models.Meeting, editable=False, addable=False, changeable=False)
-utils.site_register(models.MeetingAttendee, editable=False, addable=False, changeable=False)
+utils.site_register(models.Room, editable=False, addable=False, changeable=False,
+                    list_display=['create_user', ])
+utils.site_register(models.UserFollowRoom, editable=False, addable=False, changeable=False,
+                    list_display=['meeting', 'user'])
+utils.site_register(models.Meeting, editable=False, addable=False, changeable=False,
+                    list_display=['meeting', 'user'])
+utils.site_register(models.MeetingAttendee, editable=False, addable=False, changeable=False,
+                    list_display=['meeting', 'user'])
