@@ -211,7 +211,6 @@ Page({
       c += now_c
     }
     ret.push(str.substring(c, str.length))
-    console.log(str, count, ret)
     return ret
   },
   get_meeting_data: function(room_id, time){
