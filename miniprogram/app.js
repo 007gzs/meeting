@@ -52,7 +52,6 @@ App({
         withCredentials: true,
         lang: 'zh_CN',
         success: res => {
-          console.log(res)
           this.updateUserInfo(res.encryptedData, res.iv).then(res => {
             resolve(res)
           }).catch(res => {

@@ -93,8 +93,6 @@ Page({
   },
   add_room: function () {
     const select_rooms = this.data.room_ids.split(",")
-    console.log(select_rooms)
-    console.log(select_rooms.length)
     if(select_rooms.length >= 5){
       wx.showToast({
         title: '超过上限',
