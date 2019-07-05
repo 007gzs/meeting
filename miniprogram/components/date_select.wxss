@@ -3,13 +3,13 @@
   white-space: nowrap;
 }
 .date_select .box{
-  margin: 5px;
+  margin: 10rpx;
   text-align: center;
   font-size: 24rpx;
   line-height: 48rpx;
   height: 96rpx;
   width: 96rpx;
-  border:1px solid #ccc;
+  border:1rpx solid #ccc;
   display: inline-block;
 }
 

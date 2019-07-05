@@ -1,9 +1,3 @@
-<wxs module="check">
-function get_class(room_id, time){
-}
-
-module.exports.get_class = get_class;
-</wxs>
 <!--pages/meeting/reserve.wxml-->
 <view class='page'>
   <date_select id="date_select" bindchange="date_select_change"></date_select>

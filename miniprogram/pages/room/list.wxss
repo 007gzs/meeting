@@ -1,4 +1,4 @@
 /* pages/room/list.wxss */
 .weui-tab__content{
-    padding-top: 10px;
+    padding-top: 20rpx;
 }

@@ -1,6 +1,6 @@
 /* pages/room/detail.wxss */
 .meeting-item{
-  margin-top: 10px
+  margin-top: 20rpx
 }
 .footer button {
   padding:0 1em;

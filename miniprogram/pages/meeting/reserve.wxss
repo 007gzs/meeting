@@ -1,7 +1,10 @@
 /* pages/meeting/reserve.wxss */
+.footer{
+  margin: 0 10rpx;
+}
 .page_table{
-  margin-left: 5px;
-  margin-right: 5px;
+  margin-left: 10rpx;
+  margin-right: 10rpx;
 }
 .time_item{
   height: 32rpx;
@@ -15,7 +18,7 @@
   overflow-x: hidden;
   font-size: 32rpx;
   line-height: 32rpx;
-  border: 1px solid black;
+  border: 1rpx solid black;
 }
 
 .table .tr {
@@ -26,7 +29,7 @@
 .table .th {
   display: table-cell;
   font-weight: bold;
-  border: 1px solid black;
+  border: 1rpx solid black;
   text-align: center;
   vertical-align: middle;
   background-color: #ccc;
@@ -36,8 +39,8 @@
 
 .table .td {
   display: table-cell;
-  border-left: 1px solid black;
-  border-right: 1px solid black;
+  border-left: 1rpx solid black;
+  border-right: 1rpx solid black;
   text-align: center;
   vertical-align: middle;
   height: 36rpx;
@@ -52,11 +55,11 @@
   background-color: #cfc;
 }
 .table .td.top{
-  border-top: 1px solid black;
+  border-top: 1rpx solid black;
 }
 .table .td.bottom{
-  border-bottom: 1px solid black;
+  border-bottom: 1rpx solid black;
 }
 .label{
-  width: 62rpx;
+  width: 100rpx;
 }
