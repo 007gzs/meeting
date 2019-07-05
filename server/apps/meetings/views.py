@@ -19,8 +19,21 @@ from . import models, serializer
 site = ViewSite(name='meetings', app_name='meetings')
 
 
+class BaseView(UserBaseView):
+
+    @staticmethod
+    def get_room_follow(room_id, user_id):
+        follow, _ = models.UserFollowRoom.default_manager.get_or_create(
+            room_id=room_id, user_id=user_id
+        )
+        return follow
+
+    def get_context(self, request, *args, **kwargs):
+        raise NotImplemented
+
+
 @site
-class RoomCreate(UserBaseView):
+class RoomCreate(BaseView):
     name = "创建会议室"
 
     def get_context(self, request, *args, **kwargs):
@@ -36,7 +49,7 @@ class RoomCreate(UserBaseView):
             room.save(update_fields=['qr_code', ], force_update=True)
         except Exception:
             utility.reportExceptionByMail("get_wxa_code_unlimited_file")
-        models.UserFollowRoom.objects.create(room_id=room.pk, user_id=request.user.pk)
+        self.room_follow(room.pk, request.user.pk)
         return serializer.RoomSerializer(room, request=request).data
 
     class Meta:
@@ -47,7 +60,7 @@ class RoomCreate(UserBaseView):
 
 
 @site
-class RoomEdit(UserBaseView):
+class RoomEdit(BaseView):
     name = "修改会议室"
 
     def get_context(self, request, *args, **kwargs):
@@ -70,7 +83,7 @@ class RoomEdit(UserBaseView):
 
 
 @site
-class RoomDelete(UserBaseView):
+class RoomDelete(BaseView):
     name = "删除会议室"
 
     def get_context(self, request, *args, **kwargs):
@@ -89,7 +102,7 @@ class RoomDelete(UserBaseView):
 
 
 @site
-class RoomInfo(UserBaseView):
+class RoomInfo(BaseView):
     name = "会议室信息"
 
     def get_context(self, request, *args, **kwargs):
@@ -105,14 +118,11 @@ class RoomInfo(UserBaseView):
 
 
 @site
-class RoomFollow(UserBaseView):
+class RoomFollow(BaseView):
     name = "关注会议室"
 
     def get_context(self, request, *args, **kwargs):
-        follow, _ = models.UserFollowRoom.default_manager.get_or_create(
-            room_id=request.params.room_id, user_id=request.user.pk
-        )
-        follow.un_delete()
+        self.room_follow(request.params.room_id, request.user.pk).un_delete()
         return {}
 
     class Meta:
@@ -122,7 +132,7 @@ class RoomFollow(UserBaseView):
 
 
 @site
-class RoomUnFollow(UserBaseView):
+class RoomUnFollow(BaseView):
     name = "取消关注会议室"
 
     def get_context(self, request, *args, **kwargs):
@@ -139,7 +149,7 @@ class RoomUnFollow(UserBaseView):
 
 
 @site
-class FollowRooms(UserBaseView):
+class FollowRooms(BaseView):
     name = "已关注会议室列表"
 
     def get_context(self, request, *args, **kwargs):
@@ -150,7 +160,7 @@ class FollowRooms(UserBaseView):
 
 
 @site
-class CreateRooms(UserBaseView):
+class CreateRooms(BaseView):
     name = "创建会议室列表"
 
     def get_context(self, request, *args, **kwargs):
@@ -159,7 +169,7 @@ class CreateRooms(UserBaseView):
 
 
 @site
-class RoomMeetings(UserBaseView):
+class RoomMeetings(BaseView):
     name = "会议室预约列表"
 
     def get_context(self, request, *args, **kwargs):
@@ -186,7 +196,7 @@ class RoomMeetings(UserBaseView):
 
 
 @site
-class Reserve(UserBaseView):
+class Reserve(BaseView):
     name = "预约会议"
 
     @staticmethod
@@ -219,6 +229,7 @@ class Reserve(UserBaseView):
                 start_time=request.params.start_time,
                 end_time=request.params.end_time,
             )
+        self.room_follow(request.params.room_id, request.user.pk)
         return serializer.MeetingDetailSerializer(meeting, request=request).data
 
     class Meta:
@@ -233,7 +244,7 @@ class Reserve(UserBaseView):
 
 
 @site
-class Info(UserBaseView):
+class Info(BaseView):
     name = "会议详情"
 
     def get_context(self, request, *args, **kwargs):
@@ -249,7 +260,7 @@ class Info(UserBaseView):
 
 
 @site
-class Edit(UserBaseView):
+class Edit(BaseView):
     name = "会议修改"
 
     def get_context(self, request, *args, **kwargs):
@@ -272,7 +283,7 @@ class Edit(UserBaseView):
 
 
 @site
-class Cancel(UserBaseView):
+class Cancel(BaseView):
     name = "取消会议"
 
     def get_context(self, request, *args, **kwargs):
@@ -291,7 +302,7 @@ class Cancel(UserBaseView):
 
 
 @site
-class Join(UserBaseView):
+class Join(BaseView):
     name = "参加会议"
 
     def get_context(self, request, *args, **kwargs):
@@ -303,6 +314,7 @@ class Join(UserBaseView):
             user_id=request.user.pk
         )
         attendee.un_delete()
+        self.room_follow(request.params.room_id, request.user.pk)
         return serializer.MeetingDetailSerializer(meeting, request=request).data
 
     class Meta:
@@ -312,7 +324,7 @@ class Join(UserBaseView):
 
 
 @site
-class Leave(UserBaseView):
+class Leave(BaseView):
     name = "取消参加会议"
 
     def get_context(self, request, *args, **kwargs):
