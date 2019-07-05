@@ -1,11 +1,18 @@
 # 开源会议室
 
+## 扫码体验
+
+![开源会议室](https://raw.githubusercontent.com/007gzs/meeting/master/resource/room_demo.jpg "开源会议室")
+
+
 ## 安装方式
+
 ### 获取代码
 
     git clone https://github.com/007gzs/meeting.git
 
 ### 服务端配置
+
 #### 创建数据库
 
     CREATE SCHEMA `meeting` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
