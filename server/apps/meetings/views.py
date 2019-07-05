@@ -51,7 +51,7 @@ class RoomCreate(BaseView):
             room.save(update_fields=['qr_code', ], force_update=True)
         except Exception:
             utility.reportExceptionByMail("get_wxa_code_unlimited_file")
-        self.room_follow(room.pk, request.user.pk)
+        self.get_room_follow(room.pk, request.user.pk)
         return serializer.RoomSerializer(room, request=request).data
 
     class Meta:
@@ -124,7 +124,7 @@ class RoomFollow(BaseView):
     name = "关注会议室"
 
     def get_context(self, request, *args, **kwargs):
-        self.room_follow(request.params.room_id, request.user.pk).un_delete()
+        self.get_room_follow(request.params.room_id, request.user.pk).un_delete()
         return {}
 
     class Meta:
@@ -231,7 +231,7 @@ class Reserve(BaseView):
                 start_time=request.params.start_time,
                 end_time=request.params.end_time,
             )
-        self.room_follow(request.params.room_id, request.user.pk)
+        self.get_room_follow(request.params.room_id, request.user.pk)
         return serializer.MeetingDetailSerializer(meeting, request=request).data
 
     class Meta:
@@ -316,7 +316,7 @@ class Join(BaseView):
             user_id=request.user.pk
         )
         attendee.un_delete()
-        self.room_follow(request.params.room_id, request.user.pk)
+        self.get_room_follow(request.params.room_id, request.user.pk)
         return serializer.MeetingDetailSerializer(meeting, request=request).data
 
     class Meta:
