@@ -93,10 +93,14 @@ Page({
   },
   add_room: function () {
     const select_rooms = this.data.room_ids.split(",")
+    console.log(select_rooms)
+    console.log(select_rooms.length)
     if(select_rooms.length >= 5){
       wx.showToast({
         title: '超过上限',
+        icon: 'none'
       })
+      return
     }
     app.api.api_meeting_follow_rooms().then(res => {
       let room_ids = []
@@ -107,6 +111,12 @@ Page({
           room_ids.push(room.id.toString())
           room_names.push(room.name)
         }
+      }
+      if(room_ids.length == 0){
+        wx.showToast({
+          title: '已没有关注的会议室',
+          icon: 'none'
+        })
       }
       wx.showActionSheet({
         itemList: room_names,
@@ -185,24 +195,24 @@ Page({
     return ret
   },
   get_str_list: function(str, count){
-    if(count <= 0){
-      return []
-    }else if(count == 1){
-      return [str]
-    }
-    const mid_count = Math.round(count / 2)
-    if(str.length <= 1){
-      let ret = []
-      for(let i = 0; i < count; i ++){
-        ret.push(i == mid_count ? str : "")
+    const num = Math.floor(str.length / count) /* 每格放文字数 */
+    const left = str.length - num * count /* 剩余文字数 */
+    const float_pro_count = left / count /* 剩余文字每格需要放几个（小数） */
+    let c = 0
+    let left_c = 0
+    let ret = []
+    for(let i = 1; i < count; i++){
+      let now_c = num
+      if (float_pro_count * i - left_c >= 0.5){
+        now_c ++
+        left_c ++
       }
-      return ret
+      ret.push(str.substring(c, c + now_c))
+      c += now_c
     }
-
-    const mid = Math.round(str.length / 2)
-    const l1 = this.get_str_list(str.substring(0, mid), mid_count)
-    const l2 = this.get_str_list(str.substring(mid, str.length), count - mid_count)
-    return l1.concat(l2)
+    ret.push(str.substring(c, str.length))
+    console.log(str, count, ret)
+    return ret
   },
   get_meeting_data: function(room_id, time){
     const time_value = time.value()
