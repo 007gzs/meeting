@@ -7,6 +7,7 @@ Page({
    * 页面的初始数据
    */
   data: {
+    user_info: {},
     meeting_id: 0,
     room_id: 0,
     date: "",
@@ -18,6 +19,11 @@ Page({
   },
   bindKeyInput(e) {
     this.data[e.currentTarget.dataset.obj] = e.detail.value
+  },
+  onGetUserInfo: function (e) {
+    app.onGetUserInfo(e).then(res => {
+      this.setData({ user_info: res })
+    })
   },
   refresh: function(){
     if(this.data.meeting_id > 0){
@@ -65,6 +71,9 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    app.userInfo().then(res => {
+      this.setData({ user_info: res })
+    })
     let meeting_id = options.meeting_id
     if(meeting_id){
       this.setData({meeting_id: parseInt(meeting_id)})

@@ -28,7 +28,12 @@
             <view class="weui-cell__ft">{{date}} {{timeUtils.formatTime(start_time)}} - {{timeUtils.formatTime(end_time)}}</view>
         </view>
     </view>
-    <button class="weui-btn" type="primary" bindtap="save">保存</button>
+    
+    <block wx:if="{{!user_info.avatarurl}}">
+      <view class="weui-cells__title">需要通过微信授权获得你的微信名和头像</view>
+      <button class="weui-btn" open-type="getUserInfo" bindgetuserinfo="onGetUserInfo">授权登录</button>
+    </block>
+    <button class="weui-btn" type="primary" bindtap="save" wx:else>保存</button>
   </view>
 </view>
 

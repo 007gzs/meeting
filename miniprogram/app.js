@@ -12,7 +12,7 @@ App({
     getUserInfoing: false,
     getUserInfoPromise: [],
   },
-  userInfo: function (encrypted_data, iv) {
+  userInfo: function () {
     return new Promise((resolve, reject) => {
       this.globalData.getUserInfoPromise.push([resolve, reject])
       if (this.globalData.getUserInfoing) {
@@ -71,6 +71,8 @@ App({
       api.api_wechat_user_info({encrypted_data: encryptedData, iv: iv}).then(data => {
         this.globalData.userInfo = data
         resolve(this.globalData.userInfo)
+      }).catch(res => {
+        
       })
     });
   },

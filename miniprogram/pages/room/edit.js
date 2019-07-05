@@ -7,6 +7,7 @@ Page({
    * 页面的初始数据
    */
   data: {
+    user_info: {},
     room_id: 0,
     name: "",
     description: ""
@@ -23,6 +24,11 @@ Page({
   },
   bindKeyInput(e) {
     this.data[e.currentTarget.dataset.obj] = e.detail.value
+  },
+  onGetUserInfo: function (e) {
+    app.onGetUserInfo(e).then(res => {
+      this.setData({ user_info: res })
+    })
   },
   save: function() {
 
@@ -49,6 +55,9 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    app.userInfo().then(res => {
+      this.setData({ user_info: res })
+    })
     let room_id = options.room_id
     if(room_id){
       this.setData({ room_id: parseInt(room_id)})
