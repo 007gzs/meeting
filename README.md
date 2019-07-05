@@ -17,7 +17,7 @@
 
     CREATE SCHEMA `meeting` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
 
-#### 创建数据库
+#### 初始化数据
 将 `server/meeting/local_settings.py.default` 重命名为 `server/meeting/local_settings.py` 并修改其中相关信息
 在`server`目录中执行(推荐使用虚拟python虚拟环境)
 
