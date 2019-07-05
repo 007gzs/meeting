@@ -34,6 +34,7 @@ class BaseView(UserBaseView):
     class Meta:
         path = '/'
 
+
 @site
 class RoomCreate(BaseView):
     name = "创建会议室"
@@ -316,7 +317,7 @@ class Join(BaseView):
             user_id=request.user.pk
         )
         attendee.un_delete()
-        self.get_room_follow(request.params.room_id, request.user.pk)
+        self.get_room_follow(meeting.room_id, request.user.pk)
         return serializer.MeetingDetailSerializer(meeting, request=request).data
 
     class Meta:
