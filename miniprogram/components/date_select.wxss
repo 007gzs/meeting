@@ -1,6 +1,5 @@
 /* components/date_select.wxss */
 .date_select{
-  display: flex;
   white-space: nowrap;
 }
 .date_select .box{
