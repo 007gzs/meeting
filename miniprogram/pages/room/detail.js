@@ -27,11 +27,19 @@ Page({
       this.setData({ meetings: res.meetings })
     })
   },
-  show_qrcode: function(){
-    wx.previewImage({
-      current: this.data.info.qr_code,
-      urls: [this.data.info.qr_code]
+  hide_qrcode: function () {
+    this.setData({
+      show_qr_code: false
     })
+  },
+  show_qrcode: function(){
+    this.setData({
+      show_qr_code:true
+    })
+    // wx.previewImage({
+    //   current: this.data.info.qr_code,
+    //   urls: [this.data.info.qr_code]
+    // })
   },
   date_select_change: function (e) {
     this.refresh()

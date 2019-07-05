@@ -51,4 +51,12 @@
       </block>
     </view>
   </view>
+  
 </view>
+
+<modal class="modal" hidden="{{!show_qr_code}}" no-cancel bindconfirm="hide_qrcode" confirmText="确定" title="{{info.name}} 专属二维码">
+  <view class="dew">  
+    <image class="qr_code" src="{{info.qr_code}}" mode="aspectFit" show-menu-by-longpress></image>
+    <view class="vedw">长按二维码可保存到相册</view>   
+  </view>
+</modal>
