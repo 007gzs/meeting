@@ -21,3 +21,12 @@ MYSQL_PASSWORD = ''
 
 WECHAT_APPID = '小程序appid'
 WECHAT_APPSECRET = '小程序appsecret'
+
+# 配置以下信息管理员会收到异常邮件，不需要可直接删除
+EMAIL_HOST = ''
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+SERVER_EMAIL = ''
+DEFAULT_FROM_EMAIL = ''
+
+ADMINS = (('管理员姓名', '管理员邮箱'),)

@@ -31,6 +31,8 @@ class BaseView(UserBaseView):
     def get_context(self, request, *args, **kwargs):
         raise NotImplemented
 
+    class Meta:
+        path = '/'
 
 @site
 class RoomCreate(BaseView):
