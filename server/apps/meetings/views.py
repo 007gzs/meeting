@@ -175,7 +175,7 @@ class RoomMeetings(BaseView):
     name = "会议室预约列表"
 
     def get_context(self, request, *args, **kwargs):
-        if len(request.params.room_ids) > 5:
+        if len(request.params.room_ids) > 10:
             raise CustomError(ErrCode.ERR_COMMON_BAD_PARAM)
         d = datetime.date.today()
         if request.params.date is not None:
