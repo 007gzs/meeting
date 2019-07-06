@@ -8,6 +8,7 @@ Page({
    */
   data: {
     room_id: 0,
+    show_home: false,
     owner: false,
     info: {},
     meetings: []
@@ -40,6 +41,9 @@ Page({
     //   current: this.data.info.qr_code,
     //   urls: [this.data.info.qr_code]
     // })
+  },
+  home: function(){
+    app.gotoHome()
   },
   date_select_change: function (e) {
     this.refresh()
@@ -88,6 +92,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    this.setData({ show_home: getCurrentPages().length == 1 })
     const scene = decodeURIComponent(options.scene)
     let room_id = ''
     scene.split("&").map(s => {
@@ -155,6 +160,13 @@ Page({
    * 用户点击右上角分享
    */
   onShareAppMessage: function () {
-
+    let title = '会议室'
+    if (this.data.info.name) {
+      title += " - " + this.data.info.name
+    }
+    return {
+      title: title,
+      page: '/pages/room/detail?room_id=' + this.data.room_id
+    }
   }
 })

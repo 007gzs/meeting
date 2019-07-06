@@ -2,9 +2,17 @@
 <!--pages/room/detail.wxml-->
 <view class="page">
   <view class="page__hd">
-    <view class="page__title">{{info.name}}</view>
-    <view class="page__desc">{{info.description}}</view>
+    <view class='weui-cell'>
+      <view class='weui-cell__bd'>
+        <view class="page__title">{{info.name}}</view>
+        <view class="page__desc">{{info.description}}</view>
+      </view>
+      <view class="weui-cell__ft" wx:if="{{show_home}}">
+        <button class="weui-btn" size="mini" bindtap='home'>返回首页</button>
+      </view>
+    </view>
   </view>
+
   <date_select id="date_select" bindchange="date_select_change"></date_select>
   <view class="page_bd page__bd_spacing body-with-footer">
     <block wx:for="{{meetings}}" wx:key="id">

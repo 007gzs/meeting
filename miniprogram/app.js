@@ -90,6 +90,11 @@ App({
       return new Promise((resolve, reject) => { reject("获取失败") });
     }
   },
+  gotoHome: function(){
+    wx.reLaunch({
+      url: '/pages/room/list',
+    })
+  },
   login: function() {
     return new Promise((resolve, reject) => {
       wx.login({

@@ -36,6 +36,9 @@ Page({
       })
     })
   },
+  home: function () {
+    app.gotoHome()
+  },
   join: function(){
 
     app.api.api_meeting_join({ meeting_id: this.data.meeting_id }).then(res => {
@@ -70,6 +73,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    this.setData({ show_home: getCurrentPages().length == 1})
     let meeting_id = options.meeting_id
     if(meeting_id){
       this.setData({ meeting_id: meeting_id})
@@ -128,6 +132,13 @@ Page({
    * 用户点击右上角分享
    */
   onShareAppMessage: function () {
-
+    let title = '会议'
+    if (this.data.info.name){
+      title += " - " + this.data.info.name
+    }
+    return {
+      title: title,
+      page: '/pages/meeting/detail?meeting_id='+this.data.meeting_id
+    }
   }
 })
