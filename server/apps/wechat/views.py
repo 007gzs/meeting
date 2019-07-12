@@ -43,7 +43,7 @@ class UserBaseView(utils.APIBase):
             raise CustomError(ErrCode.ERR_WECHAT_LOGIN)
 
     def get_context(self, request, *args, **kwargs):
-        raise NotImplemented
+        raise NotImplementedError
 
     class Meta:
         path = '/'

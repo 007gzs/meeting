@@ -22,7 +22,6 @@ from django.conf import settings
 from django.urls import include
 from django.conf.urls import url
 from django.contrib import admin
-from django.views.static import serve
 
 from core import utils
 

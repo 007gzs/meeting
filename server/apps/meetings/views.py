@@ -29,7 +29,7 @@ class BaseView(UserBaseView):
         return follow
 
     def get_context(self, request, *args, **kwargs):
-        raise NotImplemented
+        raise NotImplementedError
 
     class Meta:
         path = '/'
