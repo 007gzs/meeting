@@ -4,6 +4,14 @@
 
 ![开源会议室](https://raw.githubusercontent.com/007gzs/meeting/master/resource/room_demo.jpg "开源会议室")
 
+## 软件截图
+
+![会议室列表](https://raw.githubusercontent.com/007gzs/meeting/master/resource/1.jpg "会议室列表")
+![会议预约](https://raw.githubusercontent.com/007gzs/meeting/master/resource/2.jpg "会议预约")
+![会议列表](https://raw.githubusercontent.com/007gzs/meeting/master/resource/3.jpg "会议列表")
+![会议明细](https://raw.githubusercontent.com/007gzs/meeting/master/resource/4.jpg "会议明细")
+![会议室二维码](https://raw.githubusercontent.com/007gzs/meeting/master/resource/5.jpg "会议室二维码")
+
 
 ## 安装方式
 
