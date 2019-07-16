@@ -33,6 +33,9 @@ App({
           let pro = this.globalData.getUserInfoPromise.pop()
           pro[index](info);
         }
+        if (index == 0 && info.need_refresh){
+          this.getUserInfo()
+        }
       }
       if (this.globalData.userInfo != null) {
         callback(0, this.globalData.userInfo)
@@ -56,31 +59,33 @@ App({
   },
   getUserInfo: function () {
     return new Promise((resolve, reject) => {
-      wx.getUserInfo({
-        withCredentials: true,
-        lang: 'zh_CN',
-        success: res => {
-          this.updateUserInfo(res.encryptedData, res.iv).then(res => {
-            resolve(res)
-          }).catch(res => {
-            reject(res)
-          })
+      wx.login().then(res => {
+        wx.getUserInfo({
+          withCredentials: true,
+          lang: 'zh_CN',
+          success: res => {
+            this.updateUserInfo(res.encryptedData, res.iv).then(res => {
+              resolve(res)
+            }).catch(res => {
+              reject(res)
+            })
 
-        },
-        fail(res) {
-          reject(res.errMsg);
-        }
+          },
+          fail(res) {
+            reject(res.errMsg);
+          }
+        })
       })
     })
   },
   updateUserInfo: function (encryptedData, iv){
     return new Promise((resolve, reject) => {
-      this.login().then(res => {
-        api.api_wechat_user_info({encrypted_data: encryptedData, iv: iv}).then(data => {
-          this.globalData.userInfo = data
-          resolve(this.globalData.userInfo)
-        }).catch(res => {
-          
+      api.api_wechat_user_info({ encrypted_data: encryptedData, iv: iv }).then(data => {
+        this.globalData.userInfo = data
+        resolve(this.globalData.userInfo)
+      }).catch(msg => {
+        this.login().then(res => {
+          reject(msg)
         })
       })
     })

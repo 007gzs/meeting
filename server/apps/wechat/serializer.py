@@ -10,4 +10,4 @@ class UserSerializer(utils.BaseSerializer):
 
     class Meta:
         model = models.User
-        fields = ('id', 'nickname', 'avatarurl')
+        fields = ('id', 'nickname', 'avatarurl', 'need_refresh')

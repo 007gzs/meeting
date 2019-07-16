@@ -1,6 +1,8 @@
 # encoding: utf-8
 from __future__ import absolute_import, unicode_literals
 
+import datetime
+
 from apiview import model
 from django.db import models
 
@@ -40,6 +42,10 @@ class User(utils.BaseModel, model.AbstractUserMixin):
                 self.__setattr__(k, v)
         if save:
             self.save_changed()
+
+    @property
+    def need_refresh(self):
+        return (datetime.datetime.now() - self.modify_time).total_seconds() > 86400
 
     class Meta:
         verbose_name = verbose_name_plural = "用户"
