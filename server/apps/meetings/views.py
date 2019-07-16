@@ -307,7 +307,10 @@ class Edit(BaseView):
         meeting = models.Meeting.objects.filter(pk=request.params.meeting_id).first()
         if meeting is None:
             raise CustomError(ErrCode.ERR_COMMON_BAD_PARAM)
-        if meeting.user_id != request.user.pk:
+
+        if meeting.user_id != request.user.pk and (
+                not meeting.room.create_user_manager or request.user.pk != meeting.room.create_user_id
+        ):
             raise CustomError(ErrCode.ERR_COMMON_PERMISSION)
         meeting.name = request.params.name
         meeting.description = request.params.description

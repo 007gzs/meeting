@@ -19,7 +19,8 @@ Page({
     }
     app.api.api_meeting_info({ meeting_id: this.data.meeting_id }).then(res => {
       this.setData({
-        info: res
+        info: res,
+        owner: res.is_manager
       })
       app.userInfo().then(res => {
         let joined = false
@@ -30,7 +31,6 @@ Page({
           }
         }
         this.setData({
-          owner: res.is_manager,
           joined: joined
         })
       })
