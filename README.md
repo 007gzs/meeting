@@ -11,6 +11,7 @@
 ![会议列表](https://raw.githubusercontent.com/007gzs/meeting/master/resource/3.jpg "会议列表")
 ![会议明细](https://raw.githubusercontent.com/007gzs/meeting/master/resource/4.jpg "会议明细")
 ![会议室二维码](https://raw.githubusercontent.com/007gzs/meeting/master/resource/5.jpg "会议室二维码")
+![我的会议](https://raw.githubusercontent.com/007gzs/meeting/master/resource/6.png "我的会议")
 
 
 ## 安装方式
