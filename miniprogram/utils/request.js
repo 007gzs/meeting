@@ -91,7 +91,7 @@ const checkExpires = (cookies) => {
   if (!cookies) {
     cookies = queryCookie();
   }
-  var now = new Date();
+  var now = app === undefined ? new Date() : app.nowDate();
   var newCookies = {};
 
   for (var i in cookies) {
@@ -127,10 +127,11 @@ const req = function (url, data, method, header, resolve, reject, check_login){
     header: header,
     success(res) {
       setCookieByHead(res.header);
-      if(app == undefined){
+      if(app === undefined){
         app = getApp()
       }
-      if (res.data.code == app.api.ERROR_CODE.ERR_WECHAT_LOGIN) {
+      app.globalData.timeDifference = new Date(res.header["Date"]).getTime() - new Date().getTime()
+      if (check_login && res.data.code == app.api.ERROR_CODE.ERR_WECHAT_LOGIN) {
         app.login().then(res => {
           req(url, data, method, header, resolve, reject, false)
         }).catch(res => {

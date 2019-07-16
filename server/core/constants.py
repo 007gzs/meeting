@@ -5,8 +5,8 @@ from apiview.code import Code
 
 
 DELETE_CODE = Code((
-    ('NORMAL',  0, '正常'),
-    ('DELETED', 1, '已经删除'),
+    ('NORMAL',  False, '正常'),
+    ('DELETED', True,  '已经删除'),
 ))
 
 CHANGE_LOG_STATUS_CODE = Code((

@@ -193,8 +193,10 @@ class BaseAdmin(admin.BaseAdmin):
         db_field.remote_field.through._meta.auto_created = True
         return super(BaseAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
-    def delete_view(self, *args, **kwargs):
-        raise PermissionDenied('No Delete Permission Allowed')
+    def delete_queryset(self, request, queryset):
+        # 单独调用每个model的delete，可以同时清空缓存
+        for obj in queryset:
+            self.delete_model(request, obj)
 
 
 class ExportAdmin(ExportMixin, BaseAdmin):
@@ -214,6 +216,7 @@ def site_register(model_or_iterable, admin_class=None, site=None, dismiss_create
 
 
 class APIBase(view.APIView):
+    ERROR_CODE_STATUS_CODE = 200
 
     def get_context(self, request, *args, **kwargs):
         raise NotImplementedError

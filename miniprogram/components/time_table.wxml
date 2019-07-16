@@ -1,0 +1,40 @@
+<!--components/time_table.wxml-->
+<view class='time_table' style='width:100%; height:100%'>
+    <view class="table">
+      <view class='thead'>
+        <view class="tr">
+          <view class="th label" bindtap='title_label_click'>
+          {{title_label}}
+          </view>
+          <view class="th" wx:for="{{titles}}" wx:key="id" id="{{item.id}}" bindtap='title_click'>
+            <text class="title_name">{{item.name}}</text>
+          </view>
+          <view class="th" wx:if='{{titles.length == 0}}'>
+          {{no_title_desc}}
+          </view>
+        </view>
+      </view>
+      <view class="tbody">
+        <view class="tr" wx:for="{{labels}}" wx:key="id" wx:for-item="label">
+          <view class="td label {{label.text ? 'top' : 'buttom'}}" id="{{label.id}}" bindtap='label_click'>
+            <view class="label_item">
+            {{label.text}}
+            </view>
+          </view>
+          <view 
+            class="td {{td_data[title.id][label.id].clazz}}"
+            wx:for="{{titles}}" 
+            wx:key="id" 
+            wx:for-item="title" 
+            bindtap="data_click" 
+            data-title="{{title.id}}" 
+            data-label="{{label.id}}">
+            {{td_data[title.id][label.id].text}}
+          </view>
+          
+          <view class="td" wx:if='{{titles.length == 0}}'>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>

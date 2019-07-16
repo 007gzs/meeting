@@ -1,8 +1,10 @@
 "use strict";
 //app.js
 const api = require("./utils/api.js")
+const time = require('./utils/time.js')
 App({
   api: api,
+  time: time,
   onLaunch: function () {
     // 获取用户信息
     this.userInfo()
@@ -11,6 +13,10 @@ App({
     userInfo: null,
     getUserInfoing: false,
     getUserInfoPromise: [],
+    time_difference: 0,
+  },
+  nowDate: function(){
+    return new Date(new Date().getTime() + this.globalData.timeDifference)
   },
   userInfo: function () {
     return new Promise((resolve, reject) => {

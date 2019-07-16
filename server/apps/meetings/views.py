@@ -7,6 +7,7 @@ from apiview import utility
 from apiview.err_code import ErrCode
 from apiview.exceptions import CustomError
 from apiview.views import ViewSite, fields
+from constance import config
 from django.db import transaction
 from django.db.models import Q
 
@@ -185,10 +186,13 @@ class RoomMeetings(BaseView):
             id__in=request.params.room_ids), key=lambda x: request.params.room_ids.index(x.id)
         ))
         meetings = models.Meeting.objects.filter(room_id__in=request.params.room_ids, date=d).order_by('start_time')
-
         return {
             'rooms': serializer.RoomSerializer(rooms, request=request, many=True).data,
-            'meetings': serializer.MeetingSerializer(meetings, request=request, many=True).data
+            'meetings': serializer.MeetingSerializer(meetings, request=request, many=True).data,
+            'start_time': config.RESERVE_START_TIME,
+            'end_time': config.RESERVE_END_TIME,
+            'start_date': datetime.date.today(),
+            'end_date': datetime.date.today() + datetime.timedelta(days=19)
         }
 
     class Meta:

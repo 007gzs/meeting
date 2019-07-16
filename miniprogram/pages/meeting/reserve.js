@@ -1,46 +1,7 @@
 "use strict";
 // pages/meeting/reserve.js
 const app = getApp()
-const formatNumber = n => {
-  n = n.toString()
-  return n[1] ? n : '0' + n
-}
-const Time = function (hour=0, minute=0, second=0){
-  this.hour = hour
-  this.minute = minute
-  this.second = second
-  this.string = function (num = 2) {
-    let ret = []
-    if (num > 0) {
-      ret.push(this.hour)
-    }
-    if (num > 1) {
-      ret.push(this.minute)
-    }
-    if (num > 2) {
-      ret.push(this.second)
-    }
-    return ret.map(formatNumber).join(":")
-  }
-  this.value = function () {
-    return this.hour * 3600 + this.minute * 60 + this.second
-  }
-}
-const valueToTime = function (value) {
-  const hour = Math.floor(value / 3600);
-  value %= 3600
-  const minute = Math.floor(value / 60);
-  value %= 60
-  return new Time(hour, minute, value)
-}
-const parseTime = function(str){
-  const t = str.split(":")
-  return new Time(
-    t.length > 0 ? parseInt(t[0]) : 0,
-    t.length > 1 ? parseInt(t[1]) : 0,
-    t.length > 2 ? parseInt(t[2]) : 0
-  )
-}
+
 Page({
 
   /**
@@ -48,10 +9,7 @@ Page({
    */
   data: {
     room_ids: "",
-    start_time: new Time(7, 0),
-    end_time: new Time(22, 30),
     setp_minute: 30,
-    time_range: [],
     select:{
       selected: false,
       click: false,
@@ -59,6 +17,7 @@ Page({
       end: "",
       room: {}
     },
+    time_range: [],
     rooms: [],
     meetings: [],
     td_data: {}
@@ -69,17 +28,17 @@ Page({
     })
     this.refresh()
   },
-  room_detail: function(e){
+  title_click: function(e){
     wx.showActionSheet({
       itemList: ['查看详情', '从列表移出'],
       success: r => {
         if (r.tapIndex == 0){
           wx.navigateTo({
-            url: '../room/detail?room_id=' + e.currentTarget.id,
+            url: '../room/detail?room_id=' + e.detail.title_id,
           })
         } else if (r.tapIndex == 1){
           let select_rooms = this.data.room_ids.split(",")
-          const index = select_rooms.indexOf(e.currentTarget.id)
+          const index = select_rooms.indexOf(e.detail.title_id)
           if (index >= 0) {
             select_rooms.splice(index, 1)
             const room_ids_str = select_rooms.join(",")
@@ -91,7 +50,7 @@ Page({
       }
     })
   },
-  add_room: function () {
+  title_label_click: function () {
     const select_rooms = this.data.room_ids.split(",")
     if(select_rooms.length >= 5){
       wx.showToast({
@@ -115,6 +74,7 @@ Page({
           title: '已没有关注的会议室',
           icon: 'none'
         })
+        return
       }
       wx.showActionSheet({
         itemList: room_names,
@@ -132,9 +92,9 @@ Page({
       })
     })
   },
-  time_select: function(e){
-    const room_id = e.currentTarget.dataset.room
-    const time = e.currentTarget.dataset.time
+  data_click: function(e){
+    const room_id = e.detail.title_id
+    const time = e.detail.label_id
     const td_data = this.data.td_data[room_id][time]
     if (td_data.expire || td_data.meeting_status != 0){
       return 
@@ -162,13 +122,13 @@ Page({
       this.data.select.click = false
       if (this.data.select.start == time){
         this.data.select.selected = false
-      }else if (parseTime(this.data.select.start).value() > parseTime(time).value()){
+      } else if (app.time.parseTime(this.data.select.start).value() > app.time.parseTime(time).value()){
         this.data.select.start = time
       }else{
         this.data.select.end = time
       }
     }
-    this.data.select.end_real = valueToTime(parseTime(this.data.select.end).value() + 30 * 60).string(2)
+    this.data.select.end_real = app.time.valueToTime(app.time.parseTime(this.data.select.end).value() + 30 * 60).string(2)
     this.setData({ select: this.data.select })
     this.check_td_data()
   },
@@ -216,8 +176,8 @@ Page({
     const filter_meetings = this.data.meetings.filter(m => { return m.room.toString() == room_id.toString() })
     for (let i in filter_meetings){
       let meeting = filter_meetings[i]
-      const start_time = parseTime(meeting.start_time).value()
-      const end_time = parseTime(meeting.end_time).value()
+      const start_time = app.time.parseTime(meeting.start_time).value()
+      const end_time = app.time.parseTime(meeting.end_time).value()
       let status = this.check_status(start_time, end_time - 30 * 60, time_value)
       if(status != 0){
         let count = Math.round((end_time - start_time) / 30 / 60)
@@ -240,15 +200,16 @@ Page({
         let selected_status = 0
         if (this.data.select.selected && this.data.select.room.id == room.id){
           selected_status = this.check_status(
-            parseTime(this.data.select.start).value(), parseTime(this.data.select.end).value(), time.data.value()
+            app.time.parseTime(this.data.select.start).value(),
+            app.time.parseTime(this.data.select.end).value(), time.data.value()
           )
         }
         let meeting_data = this.get_meeting_data(room.id, time.data)
         let select_date = new Date(this.selectComponent("#date_select").data.select_date)
-        let now = new Date()
+        let now = app.nowDate()
         let today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).valueOf()
         select_date = new Date(select_date.getFullYear(), select_date.getMonth(), select_date.getDate()).valueOf()
-        let now_time = new Time(now.getHours(), now.getMinutes(), now.getSeconds()).value()
+        let now_time = new app.time.Time(now.getHours(), now.getMinutes(), now.getSeconds()).value()
         let expire = false
         if (select_date < today){
           expire = true
@@ -297,8 +258,10 @@ Page({
         }
       }
     }
-    
-    this.setData({ td_data: td_data })
+    this.data.td_data = td_data
+    this.selectComponent("#time_table").set_data({
+      titles: this.data.rooms, labels: this.data.time_range, td_data: this.data.td_data
+    })
   },
   reserve: function(){
     wx.navigateTo({
@@ -314,7 +277,19 @@ Page({
       room_ids: this.data.room_ids,
       date: this.selectComponent("#date_select").data.select_date
     }).then(res => {
-      this.setData({meetings: res.meetings, rooms: res.rooms})
+
+      const start_time = app.time.parseTime(res.start_time).value()
+      const end_time = app.time.parseTime(res.end_time).value()
+      let time_range = []
+      for (let time = start_time; time <= end_time; time += 1800) {
+        const t = app.time.valueToTime(time)
+        const id = t.string(2)
+        time_range.push({ id: id, text: t.minute == 0 ? id : "", data: t })
+      }
+      this.data.meetings = res.meetings
+      this.data.rooms = res.rooms
+      this.data.time_range = time_range
+      this.selectComponent("#date_select").setDateRange(res.start_date, res.end_date)
       this.check_td_data()
     })
   },
@@ -333,15 +308,7 @@ Page({
     if(!room_ids){
       room_ids = ""
     }
-    const start_time = this.data.start_time.value()
-    const end_time = this.data.end_time.value()
-    let time_range = []
-    for(let time = start_time; time <= end_time; time += 1800){
-      const t = valueToTime(time)
-      const id = t.string(2)
-      time_range.push({ id: id, text: t.minute == 0 ? id: "", data: t})
-    }
-    this.setData({ room_ids: room_ids, time_range: time_range })
+    this.setData({ room_ids: room_ids })
     this.refresh()
   },
 

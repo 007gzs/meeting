@@ -9,17 +9,17 @@ from core import utils, constants
 
 class Room(utils.BaseModel):
     name = models.CharField(verbose_name='名称', default='', max_length=64)
-    description = models.CharField(verbose_name='描述', default='', max_length=255)
-    create_user = utils.ForeignKey(User, verbose_name='创建人', related_name='create_rooms')
-    qr_code = models.ImageField('二维码', upload_to="%Y/%m/%d/", max_length=512, null=False, default='')
+    description = models.CharField(verbose_name='描述', default='', max_length=255, blank=True)
+    create_user = utils.ForeignKey(User, verbose_name='创建人', related_name='create_rooms', editable=False)
+    qr_code = models.ImageField('二维码', upload_to="%Y/%m/%d/", max_length=512, null=False, default='', editable=False)
 
     class Meta:
         verbose_name = verbose_name_plural = "会议室"
 
 
 class UserFollowRoom(utils.BaseModel):
-    user = utils.ForeignKey(User, verbose_name='关注人')
-    room = utils.ForeignKey(Room, verbose_name='会议室', related_name='follows')
+    user = utils.ForeignKey(User, verbose_name='关注人', editable=False)
+    room = utils.ForeignKey(Room, verbose_name='会议室', related_name='follows', editable=False)
 
     class Meta:
         unique_together = ('user', 'room')
@@ -28,12 +28,12 @@ class UserFollowRoom(utils.BaseModel):
 
 class Meeting(utils.BaseModel):
     name = models.CharField(verbose_name='名称', default='', max_length=64)
-    description = models.CharField(verbose_name='描述', default='', max_length=255)
-    user = utils.ForeignKey(User, verbose_name='发起人', related_name='reserve_meetings')
-    room = utils.ForeignKey(Room, verbose_name='会议室')
-    date = models.DateField(verbose_name='会议日期', db_index=True)
-    start_time = models.TimeField(verbose_name='开始时间')
-    end_time = models.TimeField(verbose_name='结束时间')
+    description = models.CharField(verbose_name='描述', default='', max_length=255, blank=True)
+    user = utils.ForeignKey(User, verbose_name='发起人', related_name='reserve_meetings', editable=False)
+    room = utils.ForeignKey(Room, verbose_name='会议室', editable=False)
+    date = models.DateField(verbose_name='会议日期', db_index=True, editable=False)
+    start_time = models.TimeField(verbose_name='开始时间', editable=False)
+    end_time = models.TimeField(verbose_name='结束时间', editable=False)
 
     @property
     def attendees(self):
@@ -46,8 +46,8 @@ class Meeting(utils.BaseModel):
 
 
 class MeetingAttendee(utils.BaseModel):
-    meeting = utils.ForeignKey(Meeting, verbose_name='会议')
-    user = utils.ForeignKey(User, verbose_name='参与人')
+    meeting = utils.ForeignKey(Meeting, verbose_name='会议', editable=False)
+    user = utils.ForeignKey(User, verbose_name='参与人', editable=False)
 
     class Meta:
         unique_together = ('user', 'meeting')

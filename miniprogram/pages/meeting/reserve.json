@@ -1,5 +1,6 @@
 {
   "usingComponents": {
-    "date_select": "/components/date_select"
+    "date_select": "/components/date_select",
+    "time_table": "/components/time_table"
   }
 }
