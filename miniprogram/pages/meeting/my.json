@@ -2,5 +2,6 @@
   "usingComponents": {
     "date_select": "/components/date_select",
     "time_table": "/components/time_table"
-  }
+  },
+  "navigationBarTitleText": "我的会议"
 }
