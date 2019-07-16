@@ -29,6 +29,16 @@ class BaseView(UserBaseView):
         )
         return follow
 
+    @staticmethod
+    def get_date_time_settings():
+        today = datetime.date.today()
+        return {
+            'start_time': config.RESERVE_START_TIME,
+            'end_time': config.RESERVE_END_TIME,
+            'start_date': today,
+            'end_date': today + datetime.timedelta(days=config.SELECT_DATE_DAYS)
+        }
+
     def get_context(self, request, *args, **kwargs):
         raise NotImplementedError
 
@@ -186,14 +196,12 @@ class RoomMeetings(BaseView):
             id__in=request.params.room_ids), key=lambda x: request.params.room_ids.index(x.id)
         ))
         meetings = models.Meeting.objects.filter(room_id__in=request.params.room_ids, date=d).order_by('start_time')
-        return {
+        ret = self.get_date_time_settings()
+        ret.update({
             'rooms': serializer.RoomSerializer(rooms, request=request, many=True).data,
-            'meetings': serializer.MeetingSerializer(meetings, request=request, many=True).data,
-            'start_time': config.RESERVE_START_TIME,
-            'end_time': config.RESERVE_END_TIME,
-            'start_date': datetime.date.today(),
-            'end_date': datetime.date.today() + datetime.timedelta(days=19)
-        }
+            'meetings': serializer.MeetingSerializer(meetings, request=request, many=True).data
+        })
+        return ret
 
     class Meta:
         param_fields = (
@@ -216,14 +224,12 @@ class MyMeetings(BaseView):
             ).values_list('meeting', flat=True)
         ))
         rooms = list(models.Room.objects.filter(id__in=set(map(lambda x: x.room_id, meetings))))
-        return {
+        ret = self.get_date_time_settings()
+        ret.update({
             'rooms': serializer.RoomSerializer(rooms, request=request, many=True).data,
-            'meetings': serializer.MeetingSerializer(meetings, request=request, many=True).data,
-            'start_time': config.RESERVE_START_TIME,
-            'end_time': config.RESERVE_END_TIME,
-            'start_date': datetime.date.today(),
-            'end_date': datetime.date.today() + datetime.timedelta(days=19)
-        }
+            'meetings': serializer.MeetingSerializer(meetings, request=request, many=True).data
+        })
+        return ret
 
     class Meta:
         param_fields = (
