@@ -75,13 +75,15 @@ App({
   },
   updateUserInfo: function (encryptedData, iv){
     return new Promise((resolve, reject) => {
-      api.api_wechat_user_info({encrypted_data: encryptedData, iv: iv}).then(data => {
-        this.globalData.userInfo = data
-        resolve(this.globalData.userInfo)
-      }).catch(res => {
-        
+      this.login().then(res => {
+        api.api_wechat_user_info({encrypted_data: encryptedData, iv: iv}).then(data => {
+          this.globalData.userInfo = data
+          resolve(this.globalData.userInfo)
+        }).catch(res => {
+          
+        })
       })
-    });
+    })
   },
   onGetPhoneNumber: function (e) {
     if (e.detail.errMsg == 'getPhoneNumber:ok') {
