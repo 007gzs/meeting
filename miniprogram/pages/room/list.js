@@ -39,6 +39,11 @@ Page({
       url: '../meeting/reserve',
     })
   },
+  my: function (e) {
+    wx.navigateTo({
+      url: '../meeting/my',
+    })
+  },
   create: function(e){
     wx.navigateTo({
       url: 'edit',

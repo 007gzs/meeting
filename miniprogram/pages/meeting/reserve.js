@@ -16,11 +16,7 @@ Page({
       start: "",
       end: "",
       room: {}
-    },
-    time_range: [],
-    rooms: [],
-    meetings: [],
-    td_data: {}
+    }
   },
   date_select_change: function (e) {
     this.setData({
@@ -132,133 +128,15 @@ Page({
     this.setData({ select: this.data.select })
     this.check_td_data()
   },
-  check_status: function(start_time, end_time, now_time){
-    /**
-     * 0: 不在范围内
-     * 0x1: 第一
-     * 0x2: 最后 
-     * 0x4: 中间
-     */
-    let ret = 0
-    if (start_time > now_time || now_time > end_time){
-      return ret
-    }
-    ret |= 0x4
-    if (start_time == now_time) {
-      ret |= 0x1
-    }
-    if (end_time == now_time) {
-      ret |= 0x2
-    }
-    return ret
-  },
-  get_str_list: function(str, count){
-    const num = Math.floor(str.length / count) /* 每格放文字数 */
-    const left = str.length - num * count /* 剩余文字数 */
-    const float_pro_count = left / count /* 剩余文字每格需要放几个（小数） */
-    let c = 0
-    let left_c = 0
-    let ret = []
-    for(let i = 1; i < count; i++){
-      let now_c = num
-      if (float_pro_count * i - left_c >= 0.5){
-        now_c ++
-        left_c ++
-      }
-      ret.push(str.substring(c, c + now_c))
-      c += now_c
-    }
-    ret.push(str.substring(c, str.length))
-    return ret
-  },
-  get_meeting_data: function(room_id, time){
-    const time_value = time.value()
-    const filter_meetings = this.data.meetings.filter(m => { return m.room.toString() == room_id.toString() })
-    for (let i in filter_meetings){
-      let meeting = filter_meetings[i]
-      const start_time = app.time.parseTime(meeting.start_time).value()
-      const end_time = app.time.parseTime(meeting.end_time).value()
-      let status = this.check_status(start_time, end_time - 30 * 60, time_value)
-      if(status != 0){
-        let count = Math.round((end_time - start_time) / 30 / 60)
-        let str_list = this.get_str_list(meeting.name, count)
-        let pos = Math.round((time_value - start_time) / 30 / 60)
-        return { status: status, text: str_list[pos]}
-        
-      }
-    }
-    return { status: 0, text: '' }
-  },
   check_td_data: function(){
-    let td_data = {}
-    for(let i in this.data.rooms){
-      let room = this.data.rooms[i]
-      td_data[room.id] = {}
-      for (let j in this.data.time_range){
-        let time = this.data.time_range[j]
-        
-        let selected_status = 0
-        if (this.data.select.selected && this.data.select.room.id == room.id){
-          selected_status = this.check_status(
-            app.time.parseTime(this.data.select.start).value(),
-            app.time.parseTime(this.data.select.end).value(), time.data.value()
-          )
-        }
-        let meeting_data = this.get_meeting_data(room.id, time.data)
-        let select_date = new Date(this.selectComponent("#date_select").data.select_date)
-        let now = app.nowDate()
-        let today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).valueOf()
-        select_date = new Date(select_date.getFullYear(), select_date.getMonth(), select_date.getDate()).valueOf()
-        let now_time = new app.time.Time(now.getHours(), now.getMinutes(), now.getSeconds()).value()
-        let expire = false
-        if (select_date < today){
-          expire = true
-        } else if (select_date == today){
-          if (now_time > time.data.value()){
-            expire = true
-          }
-        }
-        let clazz = []
-        if(expire){
-          clazz.push("expire")
-        }
-        const border_style = function(_clazz, _status){
-          if (_status & 0x1) {
-            _clazz.push("top")
-          }
-          if (_status & 0x2) {
-            _clazz.push("bottom")
-          }
-        }
-        if (meeting_data.status == 0 && selected_status == 0) {
-          border_style(clazz, 0x1 | 0x2 | 0x4)
-        }
-        if (meeting_data.status != 0) {
-          clazz.push("in_use")
-          border_style(clazz, meeting_data.status)
-          if(selected_status != 0){
-            this.setData({
-              select: { selected: false, click: false, start: "", end: "", room: {} }, td_data: {}
-            })
-            this.check_td_data()
-            return
-          }
-        }
-        if (selected_status != 0) {
-          clazz.push("selected")
-          border_style(clazz, selected_status)
-        }
-
-        td_data[room.id][time.id] = {
-          clazz: clazz.join(" "),
-          expire: expire,
-          meeting_status: meeting_data.status,
-          text: meeting_data.text,
-          selected_status: selected_status
-        }
-      }
-    }
-    this.data.td_data = td_data
+    this.data.td_data = app.meetings.getTdData(
+      this.data.rooms,
+      this.data.meetings,
+      this.data.time_range,
+      this.data.select,
+      this.selectComponent("#date_select").data.select_date
+    )
+    this.setData({select: this.data.select})
     this.selectComponent("#time_table").set_data({
       titles: this.data.rooms, labels: this.data.time_range, td_data: this.data.td_data
     })

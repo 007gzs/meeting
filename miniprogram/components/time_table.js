@@ -53,6 +53,7 @@ Component({
       this.event('data_click', {
         title_id: e.currentTarget.dataset.title,
         label_id: e.currentTarget.dataset.label,
+        data_id: e.currentTarget.dataset.data,
       })
     }
   }

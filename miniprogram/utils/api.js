@@ -1,6 +1,6 @@
 "use strict";
 const request = require('./request')
-const server = 'http://10.100.0.7:8000'; //服务地址
+const server = 'http://10.100.0.7:8001'; //服务地址
 
 const ERROR_CODE = {
   SUCCESS: 0, // 返回成功
@@ -148,6 +148,18 @@ const api_meeting_room_meetings = function ({ room_ids, date } = {}) {
   })
 }
 
+// 我参与的会议列表
+const api_meeting_my_meetings = function ({ date } = {}) {
+  return request({
+    url: server + '/api/meeting/my/meetings',
+    method: 'GET',
+    data: {
+      date: date
+    },
+    header: { 'Content-Type': 'application/x-www-form-urlencoded' }
+  })
+}
+
 // 预约会议
 const api_meeting_reserve = function ({ room_id, name, description, date, start_time, end_time } = {}) {
   return request({
@@ -240,6 +252,7 @@ module.exports = {
   api_meeting_follow_rooms: api_meeting_follow_rooms,
   api_meeting_create_rooms: api_meeting_create_rooms,
   api_meeting_room_meetings: api_meeting_room_meetings,
+  api_meeting_my_meetings: api_meeting_my_meetings,
   api_meeting_reserve: api_meeting_reserve,
   api_meeting_info: api_meeting_info,
   api_meeting_edit: api_meeting_edit,

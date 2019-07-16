@@ -1,0 +1,11 @@
+<!--pages/meeting/my.wxml-->
+<view class='page'>
+  <date_select id="date_select" bindchange="date_select_change"></date_select>
+  <view class='page_table'>
+    <time_table
+      id="time_table"
+      binddata_click="data_click"
+      no_title_desc="没有会议"
+      title_label=""></time_table>
+  </view>
+</view>

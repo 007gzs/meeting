@@ -2,3 +2,10 @@
 .weui-tab__content{
     padding-top: 20rpx;
 }
+.buttons{
+  display: flex;
+}
+.buttons button{
+  width: 100%;
+  margin: 0 10rpx;
+}

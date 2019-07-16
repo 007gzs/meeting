@@ -203,6 +203,35 @@ class RoomMeetings(BaseView):
 
 
 @site
+class MyMeetings(BaseView):
+    name = "我参与的会议列表"
+
+    def get_context(self, request, *args, **kwargs):
+        d = datetime.date.today()
+        if request.params.date is not None:
+            d = request.params.date
+        meetings = list(models.Meeting.objects.filter(
+            id__in=models.MeetingAttendee.objects.filter(
+                user_id=request.user.pk, meeting__date=d
+            ).values_list('meeting', flat=True)
+        ))
+        rooms = list(models.Room.objects.filter(id__in=set(map(lambda x: x.room_id, meetings))))
+        return {
+            'rooms': serializer.RoomSerializer(rooms, request=request, many=True).data,
+            'meetings': serializer.MeetingSerializer(meetings, request=request, many=True).data,
+            'start_time': config.RESERVE_START_TIME,
+            'end_time': config.RESERVE_END_TIME,
+            'start_date': datetime.date.today(),
+            'end_date': datetime.date.today() + datetime.timedelta(days=19)
+        }
+
+    class Meta:
+        param_fields = (
+            ('date', fields.DateField(help_text='日期', required=False, default=None, omit=None)),
+        )
+
+
+@site
 class Reserve(BaseView):
     name = "预约会议"
 
@@ -235,6 +264,10 @@ class Reserve(BaseView):
                 date=request.params.date,
                 start_time=request.params.start_time,
                 end_time=request.params.end_time,
+            )
+            models.MeetingAttendee.objects.create(
+                user_id=request.user.pk,
+                meeting_id=meeting.pk
             )
         self.get_room_follow(request.params.room_id, request.user.pk)
         return serializer.MeetingDetailSerializer(meeting, request=request).data

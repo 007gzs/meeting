@@ -20,8 +20,11 @@
             </block>
           </view>
         </view>
-        <button class="weui-btn" type="primary" bindtap="create" hidden="{{activeIndex != 1}}">创建</button>
-        <button class="weui-btn" type="primary" bindtap="reserve" hidden="{{follow_rooms.length == 0 || activeIndex != 0}}">预约</button>
+        <view class='buttons'>
+          <button class="weui-btn" type="primary" plain="true" bindtap="create" hidden="{{activeIndex != 1}}">创建</button>
+          <button class="weui-btn" type="primary" plain="true" bindtap="reserve" hidden="{{follow_rooms.length == 0 || activeIndex != 0}}">预约</button>
+          <button class="weui-btn" type="primary" plain="true" bindtap="my" hidden="{{activeIndex != 0}}">我的会议</button>
+        </view>
       </view>
     </view>
   </view>

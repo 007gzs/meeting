@@ -23,6 +23,7 @@ const Time = function (hour = 0, minute = 0, second = 0) {
   this.value = function () {
     return this.hour * 3600 + this.minute * 60 + this.second
   }
+  return this
 }
 const valueToTime = function (value) {
   const hour = Math.floor(value / 3600);

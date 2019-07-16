@@ -28,7 +28,8 @@
             wx:for-item="title" 
             bindtap="data_click" 
             data-title="{{title.id}}" 
-            data-label="{{label.id}}">
+            data-label="{{label.id}}" 
+            data-data="{{td_data[title.id][label.id].meeting_id}}">
             {{td_data[title.id][label.id].text}}
           </view>
           

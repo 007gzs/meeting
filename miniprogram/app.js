@@ -2,9 +2,11 @@
 //app.js
 const api = require("./utils/api.js")
 const time = require('./utils/time.js')
+const meetings = require('./utils/meetings.js')
 App({
   api: api,
   time: time,
+  meetings: meetings,
   onLaunch: function () {
     // 获取用户信息
     this.userInfo()
