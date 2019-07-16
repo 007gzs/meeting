@@ -30,7 +30,7 @@ Page({
       success: r => {
         if (r.tapIndex == 0){
           wx.navigateTo({
-            url: '../room/detail?room_id=' + e.detail.title_id,
+            url: '../room/detail?room_id=' + e.detail.title_id + '&date=' + this.selectComponent("#date_select").data.select_date,
           })
         } else if (r.tapIndex == 1){
           let select_rooms = this.data.room_ids.split(",")
@@ -185,6 +185,10 @@ Page({
     }
     if(!room_ids){
       room_ids = ""
+    }
+    if (options.date) {
+      console.log(options.date)
+      this.selectComponent("#date_select").setData({select_date: options.date})
     }
     this.setData({ room_ids: room_ids })
     this.refresh()

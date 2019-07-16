@@ -25,6 +25,7 @@ Page({
       room_ids: this.data.room_id,
       date: this.selectComponent("#date_select").data.select_date
     }).then(res => {
+      this.selectComponent("#date_select").setDateRange(res.start_date, res.end_date)
       this.setData({ meetings: res.meetings })
     })
   },
@@ -50,7 +51,7 @@ Page({
   },
   reserve: function(){
     wx.navigateTo({
-      url: '../meeting/reserve?room_ids=' + this.data.room_id
+      url: '../meeting/reserve?room_ids=' + this.data.room_id + "&date=" + this.selectComponent("#date_select").data.select_date
     })
   },
   unfollow: function(){
@@ -105,6 +106,9 @@ Page({
       from_scene = true
     }else{
       room_id = options.room_id
+    }
+    if(options.date){
+      this.selectComponent("#date_select").setData({ select_date: options.date })
     }
     if (room_id) {
       this.setData({ room_id: parseInt(room_id) })
