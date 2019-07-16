@@ -59,7 +59,7 @@ App({
   },
   getUserInfo: function () {
     return new Promise((resolve, reject) => {
-      wx.login().then(res => {
+      this.login().then(res => {
         wx.getUserInfo({
           withCredentials: true,
           lang: 'zh_CN',
