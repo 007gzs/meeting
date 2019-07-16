@@ -12,6 +12,8 @@ class Room(utils.BaseModel):
     description = models.CharField(verbose_name='描述', default='', max_length=255, blank=True)
     create_user = utils.ForeignKey(User, verbose_name='创建人', related_name='create_rooms', editable=False)
     qr_code = models.ImageField('二维码', upload_to="%Y/%m/%d/", max_length=512, null=False, default='', editable=False)
+    create_user_manager = models.BooleanField(verbose_name='创建人管理', default=False,
+                                              help_text='会议室创建人可以管理该会议室内所有会议')
 
     class Meta:
         verbose_name = verbose_name_plural = "会议室"

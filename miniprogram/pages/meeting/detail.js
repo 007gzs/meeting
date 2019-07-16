@@ -30,7 +30,7 @@ Page({
           }
         }
         this.setData({
-          owner: res.id == this.data.info.user.id,
+          owner: res.is_manager,
           joined: joined
         })
       })

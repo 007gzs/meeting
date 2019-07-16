@@ -38,7 +38,17 @@ class MeetingDetailSerializer(utils.BaseSerializer):
     user = UserSerializer(many=False, read_only=True)
     room = RoomSerializer(many=False, read_only=True)
     attendees = UserSerializer(many=True, read_only=True)
+    is_manager = serializers.SerializerMethodField("func_is_manager")
+
+    def func_is_manager(self, obj):
+        if self.request is None or not isinstance(self.request.user, User):
+            return False
+        return self.request.user.pk == obj.user_id or (
+                obj.room.create_user_manager and self.request.user.pk == obj.room.create_user_id
+        )
 
     class Meta:
         model = models.Meeting
-        fields = ('id', 'user', 'room', 'date', 'start_time', 'end_time', 'attendees', 'name', 'description')
+        fields = (
+            'id', 'user', 'room', 'date', 'start_time', 'end_time', 'attendees', 'name', 'description', 'is_manager'
+        )
