@@ -19,9 +19,9 @@ const check_status = (start_time, end_time, now_time) => {
   }
   return ret
 }
-const get_str_list = (str, count) => {
-  const num = Math.floor(str.length / count) /* 每格放文字数 */
-  const left = str.length - num * count /* 剩余文字数 */
+const get_str_list = (str_arr, count) => {
+  const num = Math.floor(str_arr.length / count) /* 每格放文字数 */
+  const left = str_arr.length - num * count /* 剩余文字数 */
   const float_pro_count = left / count /* 剩余文字每格需要放几个（小数） */
   let c = 0
   let left_c = 0
@@ -32,10 +32,10 @@ const get_str_list = (str, count) => {
       now_c++
       left_c++
     }
-    ret.push(str.substring(c, c + now_c))
+    ret.push(str_arr.slice(c, c + now_c).join(""))
     c += now_c
   }
-  ret.push(str.substring(c, str.length))
+  ret.push(str_arr.slice(c, str_arr.length).join(""))
   return ret
 }
 const get_meeting_data = (room_id, time, meetings) => {
@@ -48,7 +48,8 @@ const get_meeting_data = (room_id, time, meetings) => {
     let status = check_status(start_time, end_time - 30 * 60, time_value)
     if (status != 0) {
       let count = Math.round((end_time - start_time) / 30 / 60)
-      let str_list = get_str_list(meeting.name, count)
+      let str_list = get_str_list(meeting.name.split(""), count)
+      //let str_list = meeting.name_list
       let pos = Math.round((time_value - start_time) / 30 / 60)
       return { status: status, text: str_list[pos], id: meeting.id }
 

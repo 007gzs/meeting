@@ -1,5 +1,5 @@
 <!--pages/meeting/my.wxml-->
-<view class='page'>
+<view class='page' hidden="{{loading}}">
   <date_select id="date_select" bindchange="date_select_change"></date_select>
   <view class='page_table'>
     <time_table

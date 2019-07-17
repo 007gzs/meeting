@@ -31,6 +31,7 @@ Component({
       if (td_data !== undefined) {
         data['td_data'] = td_data
       }
+      
       this.setData(data)
     },
     event: function(event, data = {}){

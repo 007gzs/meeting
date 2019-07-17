@@ -9,58 +9,55 @@
   overflow-x: hidden;
   font-size: 32rpx;
   line-height: 32rpx;
-  border: 1rpx solid black;
+  border: 1rpx solid #ddd;
 }
 
 .table .thead {
-  width: 100%;
   display: table-header-group;
+  top: 0;
 }
 .table .tbody {
-  width: 100%;
-  height: 100%;
   display: table-row-group;
   overflow-y: scroll
 }
 
 .table .tr {
   display: table-row;
-  width: 100%;
 }
 
 .table .th {
   display: table-cell;
   font-weight: bold;
-  border: 1rpx solid black;
+  border: 1rpx solid #ddd;
   text-align: center;
   vertical-align: middle;
-  background-color: #ccc;
+  background-color: #f5fafe;
   line-height: 48rpx;
   height: 48rpx;
 }
 
 .table .td {
   display: table-cell;
-  border-left: 1rpx solid black;
-  border-right: 1rpx solid black;
+  border-left: 1rpx solid #ddd;
+  border-right: 1rpx solid #ddd;
   text-align: center;
   vertical-align: middle;
   height: 36rpx;
 }
 .table .td.expire{
-  background-color: #eee;
+  background-color: #f5f5f5;
 }
 .table .td.in_use{
-  background-color: #ccc;
+  background-color: #fcf8e3;
 }
 .table .td.selected{
-  background-color: #cfc;
+  background-color: #dfffd8;
 }
 .table .td.top{
-  border-top: 1rpx solid black;
+  border-top: 1rpx solid #ddd;
 }
 .table .td.bottom{
-  border-bottom: 1rpx solid black;
+  border-bottom: 1rpx solid #ddd;
 }
 .label_item{
   height: 32rpx;
@@ -68,4 +65,5 @@
 }
 .label{
   width: 100rpx;
+  background-color: #f5fafe;
 }

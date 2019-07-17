@@ -1,5 +1,5 @@
 <!--pages/meeting/reserve.wxml-->
-<view class='page'>
+<view class='page' hidden="{{loading}}">
   <date_select id="date_select" bindchange="date_select_change" start_date="{{start_date}}" end_date="{{end_date}}"></date_select>
   <view class='page_table body-with-footer'>
     <time_table

@@ -3,14 +3,18 @@
   white-space: nowrap;
 }
 .date_select .box{
-  margin: 10rpx;
+  margin: 10rpx 10rpx 10rpx 0rpx;
   text-align: center;
   font-size: 24rpx;
   line-height: 48rpx;
   height: 96rpx;
   width: 96rpx;
-  border:1rpx solid #ccc;
+  border:1rpx solid #ddd;
+  border-radius: 10rpx;
   display: inline-block;
+}
+.date_select .box.box_0{
+  margin-left: 10rpx;
 }
 
 .date_select .box .show{
@@ -20,5 +24,5 @@
   font-size: 24rpx;
 }
 .date_select .box.select{
-  background: #ccc
+  background: #dfffd8
 }

@@ -9,7 +9,7 @@ Page({
    */
   data: {
     room_ids: "",
-    setp_minute: 30,
+    loading: true,
     select:{
       selected: false,
       click: false,
@@ -88,7 +88,14 @@ Page({
       })
     })
   },
-  data_click: function(e){
+  data_click: function (e) {
+    const meeting_id = e.detail.data_id
+    if(meeting_id != null){
+      wx.navigateTo({
+        url: '../meeting/detail?meeting_id=' + meeting_id,
+      })
+      return
+    }
     const room_id = e.detail.title_id
     const time = e.detail.label_id
     const td_data = this.data.td_data[room_id][time]
@@ -136,10 +143,10 @@ Page({
       this.data.select,
       this.selectComponent("#date_select").data.select_date
     )
-    this.setData({select: this.data.select})
     this.selectComponent("#time_table").set_data({
       titles: this.data.rooms, labels: this.data.time_range, td_data: this.data.td_data
     })
+    this.setData({ select: this.data.select, loading: false })
   },
   reserve: function(){
     wx.navigateTo({

@@ -7,7 +7,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-    
+    loading: true
   },
 
   check_td_data: function () {
@@ -21,6 +21,9 @@ Page({
     this.selectComponent("#time_table").set_data({
       titles: this.data.rooms, labels: this.data.time_range, td_data: this.data.td_data
     })
+    if(this.data.loading){
+      this.setData({ loading: false})
+    }
   },
   data_click: function(e){
     if (!e.detail.data_id){
