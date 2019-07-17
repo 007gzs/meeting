@@ -12,9 +12,9 @@
         <view class="th" wx:if='{{titles.length == 0}}'>
         {{no_title_desc}}
         </view>
-        </view>
+      </view>
     </view>
-    <view class="tbody">
+    <scroll-view scroll-y class="tbody">
       <view class="tr" wx:for="{{labels}}" wx:key="id" wx:for-item="label">
         <view class="td label {{label.text ? 'top' : 'buttom'}}" id="{{label.id}}" bindtap='label_click'>
           <view class="label_item">
@@ -35,6 +35,6 @@
         <view class="td" wx:if='{{titles.length == 0}}'>
         </view>
       </view>
-    </view>
+    </scroll-view>
   </view>
 </view>

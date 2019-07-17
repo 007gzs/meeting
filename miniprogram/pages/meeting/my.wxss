@@ -1,1 +1,20 @@
 /* pages/meeting/my.wxss */
+page{
+  height: 100%;
+}
+.page{
+  height: 100%;
+}
+.page_table{
+  position: absolute;
+  top: 116rpx;
+  bottom: 10rpx;
+  left: 10rpx;
+  right:10rpx;
+}
+#time_table {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}

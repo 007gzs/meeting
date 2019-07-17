@@ -1,56 +1,64 @@
 /* components/time_table.wxss */
-
+.time_table{
+  height: 100%;
+}
 .table {
-  display: table;
-  table-layout:fixed;
+  position: relative;
+  overflow: hidden;
   width: 100%;
-  /* border-collapse 属性设置表格的边框是否被合并为一个单一的边框，解决相邻单元格边框未合并导致有些边框变粗的视觉效果 */
-  border-collapse: collapse;
-  overflow-x: hidden;
+  height: 100%;
   font-size: 32rpx;
   line-height: 32rpx;
-  border: 1rpx solid #ddd;
+  border-right: 1rpx solid #ddd;
+  border-bottom: 1rpx solid #ddd;
 }
-
-.table .thead {
-  display: table-header-group;
-  top: 0;
+.table .thead{
+  height: 48rpx;
 }
-.table .tbody {
-  display: table-row-group;
-  overflow-y: scroll
+.table .tbody{
+  position: absolute;
+  top: 49rpx;
+  bottom: 0;
+  width: 100%;
+  overflow: auto;
 }
-
-.table .tr {
-  display: table-row;
+.table .tr{
+  display:-webkit-box;
+  display:-webkit-flex;
+  display:flex;
 }
-
-.table .th {
-  display: table-cell;
-  font-weight: bold;
-  border: 1rpx solid #ddd;
+.table .th, .table .td{
+  -webkit-box-flex:1;
+  -webkit-flex:1;
+  flex:1;
   text-align: center;
   vertical-align: middle;
+  overflow: hidden;
+  margin-right:-1rpx;
+}
+.table .th {
+  font-weight: bold;
+  border: 1rpx solid #ddd;
   background-color: #f5fafe;
   line-height: 48rpx;
   height: 48rpx;
 }
 
 .table .td {
-  display: table-cell;
   border-left: 1rpx solid #ddd;
   border-right: 1rpx solid #ddd;
-  text-align: center;
-  vertical-align: middle;
   height: 36rpx;
 }
 .table .td.expire{
+  border-top: 1rpx solid #f5f5f5;
   background-color: #f5f5f5;
 }
 .table .td.in_use{
+  border-top: 1rpx solid #fcf8e3;
   background-color: #fcf8e3;
 }
 .table .td.selected{
+  border-top: 1rpx solid #dfffd8;
   background-color: #dfffd8;
 }
 .table .td.top{
@@ -58,12 +66,16 @@
 }
 .table .td.bottom{
   border-bottom: 1rpx solid #ddd;
+  margin-bottom:-1rpx;
 }
 .label_item{
-  height: 32rpx;
-  line-height: 32rpx
+  font-size: 28rpx;
 }
-.label{
+view.label{
+  -webkit-box-flex:none!important;
+  -webkit-flex:none!important;
+  flex:none!important;
   width: 100rpx;
   background-color: #f5fafe;
+  float: left;
 }
