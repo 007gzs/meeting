@@ -35,6 +35,7 @@
   vertical-align: middle;
   overflow: hidden;
   margin-right:-1rpx;
+  margin-bottom:-1rpx;
 }
 .table .th {
   font-weight: bold;
@@ -66,7 +67,6 @@
 }
 .table .td.bottom{
   border-bottom: 1rpx solid #ddd;
-  margin-bottom:-1rpx;
 }
 .label_item{
   font-size: 28rpx;
