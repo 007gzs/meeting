@@ -1,5 +1,6 @@
 # 开源会议室
 
+开源会议室预约小程序+Django服务端后台
 
 ## 扫码体验
 
@@ -7,6 +8,10 @@
 
 
 ## 安装方式
+
+本SDK项目在以下代码托管网站同步更新:
+码云：https://gitee.com/007gzs/meeting
+GitHub：https://github.com/007gzs/meeting
 
 ### 获取代码
 
