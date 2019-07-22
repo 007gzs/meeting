@@ -10,8 +10,8 @@
 ## 安装方式
 
 本SDK项目在以下代码托管网站同步更新:
-码云：https://gitee.com/007gzs/meeting
-GitHub：https://github.com/007gzs/meeting
+* 码云：https://gitee.com/007gzs/meeting
+* GitHub：https://github.com/007gzs/meeting
 
 ### 获取代码
 
