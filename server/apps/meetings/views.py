@@ -54,7 +54,8 @@ class RoomCreate(BaseView):
         room = models.Room.objects.create(
             name=request.params.name,
             description=request.params.description,
-            create_user_id=request.user.pk
+            create_user_id=request.user.pk,
+            create_user_manager=request.params.create_user_manager
         )
         try:
             room.qr_code = biz.get_wxa_code_unlimited_file(
@@ -70,6 +71,9 @@ class RoomCreate(BaseView):
         param_fields = (
             ('name', fields.CharField(help_text='名称', max_length=64)),
             ('description', fields.CharField(help_text='描述', max_length=255)),
+            ('create_user_manager', fields.BooleanField(
+                help_text='创建人管理权限', required=False, default=False, omit=False
+            )),
         )
 
 
@@ -85,7 +89,12 @@ class RoomEdit(BaseView):
             raise CustomError(ErrCode.ERR_COMMON_PERMISSION)
         room.name = request.params.name
         room.description = request.params.description
-        room.save(force_update=True, update_fields=['name', 'description'])
+        update_fields = ['name', 'description']
+        if request.params.create_user_manager is not None:
+            room.create_user_manager = request.params.create_user_manager
+            update_fields.append('create_user_manager')
+
+        room.save(force_update=True, update_fields=update_fields)
         return serializer.RoomSerializer(room, request=request).data
 
     class Meta:
@@ -93,6 +102,9 @@ class RoomEdit(BaseView):
             ('room_id', fields.IntegerField(help_text='会议室ID')),
             ('name', fields.CharField(help_text='名称', max_length=64)),
             ('description', fields.CharField(help_text='描述', max_length=255, required=False, default="", omit="")),
+            ('create_user_manager', fields.NullBooleanField(
+                help_text='创建人管理权限', required=False, default=None, omit=None
+            )),
         )
 
 

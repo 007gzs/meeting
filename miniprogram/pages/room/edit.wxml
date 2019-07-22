@@ -17,6 +17,15 @@
             <input class="weui-input" placeholder="请输入描述" value="{{description}}" data-obj="description" bindinput='bindKeyInput'/>
         </view>
     </view>
+    <view class="weui-cells weui-cells_after-title">
+      <view class="weui-cell weui-cell_switch">
+        <view class="weui-cell__bd">创建者权限</view>
+        <view class="weui-cell__ft">
+          <switch checked='{{create_user_manager}}' bindchange='create_user_manager_change'/>
+        </view>
+      </view>
+    </view>
+    <view class="weui-cells__tips" wx:if="{{create_user_manager}}">勾选后创建者可以修改会议内容及取消会议（不可取消），为防止误操作，建议需要使用时勾选，使用完成后取消该权限</view>
     <block wx:if="{{!user_info.avatarurl}}">
       <view class="weui-cells__title">需要通过微信授权获得你的微信名和头像</view>
       <button class="weui-btn" open-type="getUserInfo" bindgetuserinfo="onGetUserInfo">授权登录</button>

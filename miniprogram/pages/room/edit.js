@@ -10,19 +10,24 @@ Page({
     user_info: {},
     room_id: 0,
     name: "",
-    description: ""
+    description: "",
+    create_user_manager: false
   },
   refreshInfo: function() {
     if (this.data.room_id > 0){
       app.api.api_meeting_room_info({ room_id: this.data.room_id}).then(res => {
         this.setData({
           name: res.name,
-          description: res.description
+          description: res.description,
+          create_user_manager: res.create_user_manager
         })
       })
     }
   },
-  bindKeyInput(e) {
+  create_user_manager_change: function(e){
+    this.setData({ create_user_manager: e.detail.value })
+  },
+  bindKeyInput: function(e) {
     this.data[e.currentTarget.dataset.obj] = e.detail.value
   },
   onGetUserInfo: function (e) {
@@ -36,14 +41,16 @@ Page({
       app.api.api_meeting_room_edit({
         room_id: this.data.room_id,
         name: this.data.name,
-        description: this.data.description
+        description: this.data.description,
+        create_user_manager: this.data.create_user_manager
       }).then(res => {
         wx.navigateBack()
       })
     } else {
       app.api.api_meeting_room_create({
         name: this.data.name,
-        description: this.data.description
+        description: this.data.description,
+        create_user_manager: this.data.create_user_manager
       }).then(res => {
         wx.redirectTo({
           url: 'detail?room_id='+res.id,

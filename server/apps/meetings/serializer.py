@@ -25,7 +25,7 @@ class RoomDetailSerializer(utils.BaseSerializer):
 
     class Meta:
         model = models.Room
-        fields = ('id', 'name', 'description', 'qr_code', 'create_user', 'is_follow')
+        fields = ('id', 'name', 'description', 'qr_code', 'create_user', 'is_follow', 'create_user_manager')
 
 
 class MeetingSerializer(utils.BaseSerializer):

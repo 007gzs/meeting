@@ -41,27 +41,29 @@ const api_wechat_user_info = function ({ encrypted_data, iv } = {}) {
 }
 
 // 创建会议室
-const api_meeting_room_create = function ({ name, description } = {}) {
+const api_meeting_room_create = function ({ name, description, create_user_manager } = {}) {
   return request({
     url: server + '/api/meeting/room/create',
     method: 'POST',
     data: {
       name: name,
-      description: description
+      description: description,
+      create_user_manager: create_user_manager
     },
     header: { 'Content-Type': 'application/x-www-form-urlencoded' }
   })
 }
 
 // 修改会议室
-const api_meeting_room_edit = function ({ room_id, name, description } = {}) {
+const api_meeting_room_edit = function ({ room_id, name, description, create_user_manager } = {}) {
   return request({
     url: server + '/api/meeting/room/edit',
     method: 'POST',
     data: {
       room_id: room_id,
       name: name,
-      description: description
+      description: description,
+      create_user_manager: create_user_manager
     },
     header: { 'Content-Type': 'application/x-www-form-urlencoded' }
   })
