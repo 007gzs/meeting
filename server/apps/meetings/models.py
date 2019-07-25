@@ -4,7 +4,10 @@ from __future__ import absolute_import, unicode_literals
 from django.db import models
 
 from apps.wechat.models import User
-from core import utils, constants
+from core import utils
+from core.constants import DELETE_CODE
+
+from . import constants
 
 
 class Room(utils.BaseModel):
@@ -40,7 +43,7 @@ class Meeting(utils.BaseModel):
     @property
     def attendees(self):
         return User.objects.filter(
-            meetingattendee__meeting_id=self.pk, meetingattendee__delete_status=constants.DELETE_CODE.NORMAL.code
+            meetingattendee__meeting_id=self.pk, meetingattendee__delete_status=DELETE_CODE.NORMAL.code
         )
 
     class Meta:
@@ -54,3 +57,14 @@ class MeetingAttendee(utils.BaseModel):
     class Meta:
         unique_together = ('user', 'meeting')
         verbose_name = verbose_name_plural = "参会人"
+
+
+class MeetingTrace(utils.BaseModel):
+    meeting = utils.ForeignKey(Meeting, verbose_name='会议')
+    user = utils.ForeignKey(User, verbose_name='操作人')
+    owner = models.BooleanField(verbose_name='是否发起人自己操作')
+    type = models.IntegerField(verbose_name='操作类型', choices=constants.MEETING_TRACE_TYPE_CODE.get_list())
+    data = models.CharField(verbose_name='详细信息', max_length=4096, default='')
+
+    class Meta:
+        verbose_name = verbose_name_plural = "会议操作历史"

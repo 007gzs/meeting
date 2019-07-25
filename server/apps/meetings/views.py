@@ -2,6 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 
 import datetime
+import json
 
 from apiview import utility
 from apiview.err_code import ErrCode
@@ -13,9 +14,9 @@ from django.db.models import Q
 
 from apps.wechat import biz
 from apps.wechat.views import UserBaseView
-from core import constants
+from core.constants import DELETE_CODE
 
-from . import models, serializer
+from . import models, serializer, constants
 
 site = ViewSite(name='meetings', app_name='meetings')
 
@@ -93,7 +94,6 @@ class RoomEdit(BaseView):
         if request.params.create_user_manager is not None:
             room.create_user_manager = request.params.create_user_manager
             update_fields.append('create_user_manager')
-
         room.save(force_update=True, update_fields=update_fields)
         return serializer.RoomSerializer(room, request=request).data
 
@@ -180,7 +180,7 @@ class FollowRooms(BaseView):
 
     def get_context(self, request, *args, **kwargs):
         rooms = models.Room.objects.filter(
-            follows__user_id=request.user.pk, follows__delete_status=constants.DELETE_CODE.NORMAL.code
+            follows__user_id=request.user.pk, follows__delete_status=DELETE_CODE.NORMAL.code
         )
         return serializer.RoomSerializer(rooms, request=request, many=True).data
 
@@ -330,9 +330,26 @@ class Edit(BaseView):
                 not meeting.room.create_user_manager or request.user.pk != meeting.room.create_user_id
         ):
             raise CustomError(ErrCode.ERR_COMMON_PERMISSION)
-        meeting.name = request.params.name
-        meeting.description = request.params.description
-        meeting.save(force_update=True, update_fields=['name', 'description'])
+        data = dict()
+        update_fields = list()
+        if meeting.name != request.params.name:
+            data['name'] = {'from': meeting.name, 'to': request.params.name}
+            update_fields.append('name')
+            meeting.name = request.params.name
+        if meeting.description != request.params.description:
+            data['description'] = {'from': meeting.description, 'to': request.params.description}
+            update_fields.append('description')
+            meeting.name = request.params.name
+        if update_fields:
+            with transaction.atomic():
+                meeting.save(force_update=True, update_fields=update_fields)
+                models.MeetingTrace.objects.create(
+                    meeting_id=meeting.pk,
+                    user_id=request.user.pk,
+                    owner=request.user.pk == meeting.user_id,
+                    type=constants.MEETING_TRACE_TYPE_CODE.EDIT.code,
+                    data=json.dumps(data, ensure_ascii=False)
+                )
         return serializer.MeetingDetailSerializer(meeting, request=request).data
 
     class Meta:
@@ -353,7 +370,14 @@ class Cancel(BaseView):
             raise CustomError(ErrCode.ERR_COMMON_BAD_PARAM)
         if meeting.user_id != request.user.pk:
             raise CustomError(ErrCode.ERR_COMMON_PERMISSION)
-        meeting.delete()
+        with transaction.atomic():
+            meeting.delete()
+            models.MeetingTrace.objects.create(
+                meeting_id=meeting.pk,
+                user_id=request.user.pk,
+                owner=request.user.pk == meeting.user_id,
+                type=constants.MEETING_TRACE_TYPE_CODE.DELETE.code
+            )
         return {}
 
     class Meta:
