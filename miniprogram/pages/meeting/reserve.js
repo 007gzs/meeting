@@ -155,7 +155,7 @@ Page({
   },
   refresh: function () {
     if (!this.data.room_ids) {
-      this.setData({ meetings: [], rooms: [], td_data: {} })
+      this.setData({ meetings: [], rooms: [], td_data: {}, loading: false })
       return
     }
     app.api.api_meeting_room_meetings({
