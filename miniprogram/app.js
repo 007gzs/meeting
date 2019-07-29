@@ -7,11 +7,16 @@ App({
   api: api,
   time: time,
   meetings: meetings,
-  onLaunch: function () {
+  onLaunch: function (options) {
     // 获取用户信息
     this.userInfo()
   },
+  onShow: function(options){
+  },
+  onHide: function (options) {
+  },
   globalData: {
+    config: null,
     userInfo: null,
     getUserInfoing: false,
     getUserInfoPromise: [],
@@ -19,6 +24,20 @@ App({
   },
   nowDate: function(){
     return new Date(new Date().getTime() + this.globalData.timeDifference)
+  },
+  config: function(){
+    return new Promise((resolve, reject) => {
+      if (this.config != null){
+        resolve(this.config)
+        return
+      }
+      api.api_meeting_config().then(res => {
+        this.config = res
+        resolve(this.config)
+      }).catch(res => {
+        reject(res)
+      })
+    })
   },
   userInfo: function () {
     return new Promise((resolve, reject) => {

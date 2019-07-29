@@ -10,4 +10,6 @@ CONSTANCE_CONFIG = OrderedDict((
     ('RESERVE_START_TIME', (datetime.time(7, 0), '预约起始时间')),
     ('RESERVE_END_TIME', (datetime.time(22, 30), '预约结束时间')),
     ('SELECT_DATE_DAYS', (19, '日期选项今天之后可选天数')),
+    ('BANNER_AD_UNIT_ID', ('', 'unit-id')),
+    ('BANNER_AD_INTERVALS', (30, 'ad-intervals')),
 ))

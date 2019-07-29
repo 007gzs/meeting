@@ -48,6 +48,18 @@ class BaseView(UserBaseView):
 
 
 @site
+class Config(BaseView):
+    name = "配置信息"
+
+    def get_context(self, request, *args, **kwargs):
+        return {
+            'reserve_start_time': config.RESERVE_START_TIME,
+            'reserve_end_time': config.RESERVE_END_TIME,
+            'select_date_days': config.SELECT_DATE_DAYS
+        }
+
+
+@site
 class RoomCreate(BaseView):
     name = "创建会议室"
 
