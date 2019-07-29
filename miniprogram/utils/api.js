@@ -40,6 +40,16 @@ const api_wechat_user_info = function ({ encrypted_data, iv } = {}) {
   })
 }
 
+// 配置信息
+const api_meeting_config = function ({ } = {}) {
+  return request({
+    url: server + '/api/meeting/config',
+    method: 'GET',
+    data: {},
+    header: { 'Content-Type': 'application/x-www-form-urlencoded' }
+  })
+}
+
 // 创建会议室
 const api_meeting_room_create = function ({ name, description, create_user_manager } = {}) {
   return request({
@@ -245,6 +255,7 @@ module.exports = {
   ERROR_CODE: ERROR_CODE,
   api_wechat_login: api_wechat_login,
   api_wechat_user_info: api_wechat_user_info,
+  api_meeting_config: api_meeting_config,
   api_meeting_room_create: api_meeting_room_create,
   api_meeting_room_edit: api_meeting_room_edit,
   api_meeting_room_delete: api_meeting_room_delete,
