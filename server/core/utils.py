@@ -9,7 +9,6 @@ from django import forms
 from django.db import models
 from django.contrib.auth import models as auth_models
 from django.utils.encoding import force_bytes
-from django.core.exceptions import PermissionDenied
 from django.db.models.fields import reverse_related
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.renderers import StaticHTMLRenderer

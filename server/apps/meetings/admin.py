@@ -17,4 +17,3 @@ utils.site_register(models.MeetingAttendee, addable=False, changeable=False,
                     list_display=['meeting', 'user'])
 utils.site_register(models.MeetingTrace, addable=False, changeable=False,
                     list_display=['meeting', 'user'], list_filter=['owner', 'type'])
-
