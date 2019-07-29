@@ -1,11 +1,54 @@
 /* pages/room/list.wxss */
+page, .page{
+  height: 100%
+}
+.page{
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+.head{
+  background: #fff;
+  display: -webkit-box;
+  width: 100%;
+  border-bottom: 1rpx solid #ccc;
+}
+
+.body{
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  display:flex;
+  width: 100%;
+}
+.foot{
+  width: 100%;
+  background: #fff;
+}
+.adContainer{
+  width: 100%;
+}
+.weui-tab__panel{
+  width: 100%;
+  padding-top: 0;
+}
 .weui-tab__content{
-    padding-top: 20rpx;
+  width: 100%;
 }
 .buttons{
+  padding-bottom: 10rpx;
   display: flex;
 }
 .buttons button{
   width: 100%;
   margin: 0 10rpx;
+}
+.buttons .weui-btn{
+  margin-top: 0;
 }

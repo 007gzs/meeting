@@ -1,18 +1,19 @@
 <!--pages/room/list.wxml-->
 <view class="page">
-  <view class="weui-tab">
-    <view class="weui-navbar">
-      <block wx:for="{{tabs}}" wx:key="*this">
-          <view id="{{index}}" class="weui-navbar__item {{activeIndex == index ? 'weui-bar__item_on' : ''}}" bindtap="tabClick">
-            <view class="weui-navbar__title">{{item}}</view>
-          </view>
-      </block>
-    </view>
-    <view class="weui-tab__panel page__bd_spacing">
+  <view class="head">
+    <block wx:for="{{tabs}}" wx:key="*this">
+      <view id="{{index}}" class="weui-navbar__item {{activeIndex == index ? 'weui-bar__item_on' : ''}}" bindtap="tabClick">
+        <view class="weui-navbar__title">{{item}}</view>
+      </view>
+    </block>
+  </view>
+  <view class="body">
+    <view class="weui-tab__panel page__bd_spacing content">
       <view class="weui-tab__content">
-        <view class="weui-panel weui-panel_access">
+        <block wx:if="{{rooms[activeIndex] == null}}"></block>
+        <view class="weui-panel weui-panel_access" wx:elif="{{rooms[activeIndex].length > 0}}">
           <view class="weui-panel__bd">
-            <block wx:for="{{activeIndex == 0 ? follow_rooms : create_rooms}}" wx:key="id">
+            <block wx:for="{{rooms[activeIndex]}}" wx:key="id">
               <view id="{{item.id}}" bindtap='detail' class="weui-media-box weui-media-box_text" hover-class="weui-cell_active">
                   <view class="weui-media-box__title weui-media-box__title_in-text">{{item.name}}</view>
                   <view class="weui-media-box__desc">{{item.description}}</view>
@@ -20,12 +21,17 @@
             </block>
           </view>
         </view>
-        <view class='buttons'>
-          <button class="weui-btn" type="primary" plain="true" bindtap="create" hidden="{{activeIndex != 1}}">创建</button>
-          <button class="weui-btn" type="primary" plain="true" bindtap="reserve" hidden="{{follow_rooms.length == 0 || activeIndex != 0}}">预约</button>
-          <button class="weui-btn" type="primary" plain="true" bindtap="my" hidden="{{activeIndex != 0}}">我的会议</button>
+        <view wx:else>
+          没有{{tags[activeIndex]}}会议室，请先创建
         </view>
       </view>
+    </view>
+  </view>
+  <view class="weui-footer foot">
+    <view class='buttons'>
+      <button class="weui-btn" type="primary" plain="true" bindtap="create" hidden="{{activeIndex == 0}}">创建</button>
+      <button class="weui-btn" type="primary" plain="true" bindtap="reserve" hidden="{{rooms[activeIndex].length == 0 || activeIndex == 1}}">预约</button>
+      <button class="weui-btn" type="primary" plain="true" bindtap="my" hidden="{{activeIndex == 1}}">我的会议</button>
     </view>
   </view>
 </view>

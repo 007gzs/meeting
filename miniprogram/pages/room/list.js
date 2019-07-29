@@ -7,29 +7,29 @@ Page({
    * 页面的初始数据
    */
   data: {
+    tags: ["关注", "创建"],
     tabs: ["我关注的", "我创建的"],
     activeIndex: 0,
-    follow_rooms: [],
-    create_rooms: [],
+    rooms: [null, null],
   },
   refreshFollowRooms: function () {
     app.api.api_meeting_follow_rooms().then(res => {
-      this.setData({ follow_rooms: res })
+      this.data.rooms[0] = res
+      this.setData({ rooms: this.data.rooms })
     })
   },
   refreshCreateRooms: function () {
     app.api.api_meeting_create_rooms().then(res => {
-      this.setData({ create_rooms: res })
+      this.data.rooms[1] = res
+      this.setData({ rooms: this.data.rooms })
     })
   },
   refresh: function(){
     switch (this.data.activeIndex){
       case 0:
-      case "0":
         this.refreshFollowRooms()
         break
       case 1:
-      case "1":
         this.refreshCreateRooms()
         break
     }
@@ -56,7 +56,7 @@ Page({
   },
   tabClick: function (e) {
     this.setData({
-      activeIndex: e.currentTarget.id
+      activeIndex: parseInt(e.currentTarget.id)
     });
     this.refresh()
   },
