@@ -27,13 +27,13 @@ App({
   },
   config: function(){
     return new Promise((resolve, reject) => {
-      if (this.config != null){
-        resolve(this.config)
+      if (this.globalData.config != null){
+        resolve(this.globalData.config)
         return
       }
       api.api_meeting_config().then(res => {
-        this.config = res
-        resolve(this.config)
+        this.globalData.config = res
+        resolve(this.globalData.config)
       }).catch(res => {
         reject(res)
       })
