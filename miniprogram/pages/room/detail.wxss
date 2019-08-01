@@ -2,11 +2,6 @@
 .meeting-item{
   margin-top: 20rpx
 }
-.footer button {
-  padding:0 1em;
-  font-size: 24rpx;
-  white-space: nowrap;
-}
 .qr_code{
   width: 100%
 }

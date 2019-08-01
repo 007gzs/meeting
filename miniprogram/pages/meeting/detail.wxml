@@ -30,7 +30,7 @@
             <view class="weui-cell__bd">参与人</view>
             <view class="weui-cell__ft">
             <block wx:for="{{info.attendees}}" wx:key="id">
-            <image src="{{item.avatarurl}}" style="margin-right: 1rpx;vertical-align: middle;width:32rpx; height: 32rpx;"></image>
+            <image src="{{item.avatarurl}}" wx:if="{{item.avatarurl}}" style="margin-right: 1rpx;vertical-align: middle;width:32rpx; height: 32rpx;"></image>
             </block>
             ({{info.attendees.length}})
             </view>
@@ -41,15 +41,18 @@
   <view class="weui-footer footer">
     <view class="weui-flex">
       <view class="weui-flex__item">
-        <button class="weui-btn" size="mini" bindtap='leave' wx:if="{{joined}}">取消参加</button>
-        <button class="weui-btn" size="mini" bindtap='join' wx:else>参加</button>
+        <button size="mini" open-type="share">分享</button>
+      </view>
+      <view class="weui-flex__item">
+        <button size="mini" bindtap='leave' wx:if="{{joined}}">取消参加</button>
+        <button size="mini" bindtap='join' wx:else>参加</button>
       </view>
       <block wx:if="{{owner}}">
         <view class="weui-flex__item">
-          <button class="weui-btn" size="mini" bindtap='edit'>修改</button>
+          <button size="mini" bindtap='edit'>修改</button>
         </view>
         <view class="weui-flex__item">
-          <button class="weui-btn" size="mini" bindtap='del'>取消</button>
+          <button size="mini" bindtap='del'>取消</button>
         </view>
       </block>
     </view>

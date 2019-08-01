@@ -40,21 +40,24 @@
   <view class="weui-footer footer">
     <view class="weui-flex">
       <view class="weui-flex__item">
-        <button class="weui-btn" size="mini" bindtap='reserve'>预约</button>
+        <button size="mini" open-type="share">分享</button>
       </view>
       <view class="weui-flex__item">
-        <button class="weui-btn" size="mini" bindtap='unfollow' wx:if="{{info.is_follow}}">取消关注</button>
-        <button class="weui-btn" size="mini" bindtap='follow' wx:else>关注</button>
+        <button size="mini" bindtap='reserve'>预约</button>
+      </view>
+      <view class="weui-flex__item">
+        <button size="mini" bindtap='unfollow' wx:if="{{info.is_follow}}">取消关注</button>
+        <button size="mini" bindtap='follow' wx:else>关注</button>
       </view>
       <view class="weui-flex__item" vx:if="{{info.qr_code}}">
-        <button class="weui-btn" size="mini" bindtap='show_qrcode'>二维码</button>
+        <button size="mini" bindtap='show_qrcode'>二维码</button>
       </view>
       <block wx:if="{{owner}}">
         <view class="weui-flex__item">
-          <button class="weui-btn" size="mini" bindtap='edit'>修改</button>
+          <button size="mini" bindtap='edit'>修改</button>
         </view>
         <view class="weui-flex__item">
-          <button class="weui-btn" size="mini" bindtap='del'>删除</button>
+          <button size="mini" bindtap='del'>删除</button>
         </view>
       </block>
     </view>

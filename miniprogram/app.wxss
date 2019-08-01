@@ -6,6 +6,17 @@ button {
   font-size:36rpx;
 }
 
+.footer button {
+  padding:0 1em;
+  font-size: 24rpx;
+  white-space: nowrap;
+}
+.footer button[size=mini] {
+  border: 1rpx solid #ccc;
+}
+.footer button[size=mini]::after {
+  border: none;
+}
 @import 'weui/weui.wxss';
 
 .page{
