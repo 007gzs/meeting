@@ -26,14 +26,22 @@
             <view class="weui-cell__bd">发起人</view>
             <view class="weui-cell__ft"><image src="{{info.user.avatarurl}}" style="margin-right: 10rpx;vertical-align: middle;width:48rpx; height: 48rpx;"></image>{{info.user.nickname}}</view>
         </view>
-        <view class="weui-cell">
-            <view class="weui-cell__bd">参与人</view>
-            <view class="weui-cell__ft">
-            <block wx:for="{{info.attendees}}" wx:key="id">
-            <image src="{{item.avatarurl}}" wx:if="{{item.avatarurl}}" style="margin-right: 1rpx;vertical-align: middle;width:32rpx; height: 32rpx;"></image>
-            </block>
-            ({{info.attendees.length}})
+        <view class="weui-cell" bindtap="attendees_show_change">
+          <view class="weui-cell__bd">参与人</view>
+          <view class="weui-cell__ft attendees {{attendees_show ? 'attendees_detail' : 'attendees_info'}}">
+            <view wx:for="{{info.attendees}}" wx:key="id" wx:if="{{item.avatarurl}}">
+              <image src="{{item.avatarurl}}" style="margin-right: 1rpx;vertical-align: middle;width:32rpx; height: 32rpx;"></image>
+              <block wx:if="{{attendees_show && item.nickname}}">
+                {{item.nickname}}
+              </block>
             </view>
+            <view wx:if="{{!attendees_show}}">
+              ({{info.attendees.length}})
+            </view>
+            <view wx:elif="{{no_icon_attendee_num > 0}}">
+              及其他{{no_icon_attendee_num}}人
+            </view>
+          </view>
         </view>
     </view>
   </view>

@@ -1,1 +1,10 @@
 /* pages/meeting/detail.wxss */
+.attendees{
+  max-width: 50%;
+}
+.attendees_detail view{
+  float: none;
+}
+.attendees_info view{
+  float: left;
+}

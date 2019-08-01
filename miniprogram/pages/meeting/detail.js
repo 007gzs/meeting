@@ -10,6 +10,8 @@ Page({
     meeting_id: 0,
     owner: false,
     joined: false,
+    attendees_show: false,
+    no_icon_attendee_num: 0,
     info: {}
   },
 
@@ -18,13 +20,21 @@ Page({
       return
     }
     app.api.api_meeting_info({ meeting_id: this.data.meeting_id }).then(res => {
+      let no_icon_attendee_num = 0
+      for (let i in res.attendees) {
+        if (!res.attendees[i].avatarurl) {
+          no_icon_attendee_num += 1
+        }
+      }
       this.setData({
         info: res,
+        no_icon_attendee_num: no_icon_attendee_num,
         owner: res.is_manager
       })
+      
       app.userInfo().then(res => {
         let joined = false
-        for(var i in this.data.info.attendees){
+        for(let i in this.data.info.attendees){
           if (this.data.info.attendees[i].id == res.id){
             joined = true
             break
@@ -35,6 +45,9 @@ Page({
         })
       })
     })
+  },
+  attendees_show_change: function(){
+    this.setData({ attendees_show: !this.data.attendees_show})
   },
   home: function () {
     app.gotoHome()
