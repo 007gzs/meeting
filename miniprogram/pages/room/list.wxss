@@ -43,6 +43,7 @@ page, .page{
 }
 .buttons{
   padding-bottom: 10rpx;
+  padding-top: 10rpx;
   display: flex;
 }
 .buttons button{

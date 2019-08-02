@@ -6,13 +6,11 @@ button {
   font-size:36rpx;
 }
 
-.footer button {
+button[size=mini] {
+  border: 1rpx solid #ccc;
   padding:0 1em;
   font-size: 24rpx;
   white-space: nowrap;
-}
-button[size=mini] {
-  border: 1rpx solid #ccc;
 }
 button[size=mini]::after {
   border: none;
