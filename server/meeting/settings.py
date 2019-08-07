@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
     'rest_framework',
     'constance',
     'import_export',
@@ -106,6 +107,12 @@ CACHES = {
 
 WSGI_APPLICATION = 'meeting.wsgi.application'
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "asgiref.inmemory.ChannelLayer",
+        "ROUTING": "meeting.routing.channel_routing",
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases

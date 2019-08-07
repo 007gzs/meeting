@@ -7,6 +7,7 @@ gevent
 celery
 requests
 django
+channels<2
 django-grappelli
 django-constance
 django-redis-sessions

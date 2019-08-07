@@ -351,6 +351,7 @@ def generate_api_js(request):
     content += '"use strict";\n'
     content += "const request = require('./request')\n"
     content += "const server = '%s'; //服务地址\n\n" % request.build_absolute_uri("/")[:-1]
+
     module_exports += '  ERROR_CODE: ERROR_CODE'
     content += 'const ERROR_CODE = {\n'
     last = ''
@@ -406,7 +407,8 @@ def generate_api_js(request):
 // %s
 const %s = function({%s} = {}) {
   return request({
-    url: server + '%s',
+    server: server,
+    path: '%s',
     method: '%s',
     data: {%s},
     header: { 'Content-Type': '%s' }
