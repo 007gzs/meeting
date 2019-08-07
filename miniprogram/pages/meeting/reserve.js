@@ -194,7 +194,6 @@ Page({
       room_ids = ""
     }
     if (options.date) {
-      console.log(options.date)
       this.selectComponent("#date_select").setData({select_date: options.date})
     }
     this.setData({ room_ids: room_ids })

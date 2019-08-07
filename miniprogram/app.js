@@ -20,7 +20,9 @@ App({
     userInfo: null,
     getUserInfoing: false,
     getUserInfoPromise: [],
-    time_difference: 0,
+    logining: false,
+    loginPromise: [],
+    timeDifference: 0,
   },
   nowDate: function(){
     return new Date(new Date().getTime() + this.globalData.timeDifference)
@@ -131,15 +133,27 @@ App({
   },
   login: function() {
     return new Promise((resolve, reject) => {
+      this.globalData.loginPromise.push([resolve, reject])
+      if (this.globalData.logining) {
+        return
+      }
+      this.globalData.logining = true
+      let callback = (index, data) => {
+        this.globalData.logining = false
+        while (this.globalData.loginPromise.length > 0) {
+          let pro = this.globalData.loginPromise.pop()
+          pro[index](data);
+        }
+      }
       wx.login({
         success: res => {
           api.api_wechat_login({js_code: res.code}).then(data => {
-            resolve(data)
+            callback(0, data)
           })
           // 发送 res.code 到后台换取 openId, sessionKey, unionId
         },
         fail: res => {
-          reject(res)
+          callback(1, res)
         }
       })
     })
