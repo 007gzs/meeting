@@ -109,8 +109,19 @@ WSGI_APPLICATION = 'meeting.wsgi.application'
 
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "asgiref.inmemory.ChannelLayer",
         "ROUTING": "meeting.routing.channel_routing",
+        "BACKEND": "asgi_redis.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [
+                'redis://%s%s@%s:%s/%d' % (
+                    ':' if ls.REDIS_PASSWORD else '',
+                    ls.REDIS_PASSWORD,
+                    ls.REDIS_HOST,
+                    ls.REDIS_PORT,
+                    ls.REDIS_CHANNEL_DB
+                )
+            ]
+        }
     },
 }
 

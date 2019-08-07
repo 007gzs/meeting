@@ -8,6 +8,7 @@ celery
 requests
 django
 channels<2
+asgi_redis
 django-grappelli
 django-constance
 django-redis-sessions
