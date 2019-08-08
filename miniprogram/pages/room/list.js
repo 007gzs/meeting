@@ -60,10 +60,37 @@ Page({
     });
     this.refresh()
   },
+  adLoad: function (options) {
+  },
+  adError: function (options) {
+    console.log("adError", options)
+    this.setData({ show_ad: false})
+  },
+  adClose: function (options) {
+    this.setData({ show_ad: false })
+  },
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+
+    let room_ids = options.room_ids
+    if (room_ids) {
+      this.api.api_meeting_room_follow({room_id: room_ids}).then(res => {
+        this.refresh()
+      })
+    }
+    app.config().then(res => {
+      if (res.banner_ad_unit_id){
+        let data = {}
+        data.ad_unit_id = res.banner_ad_unit_id
+        data.show_ad = true
+        if (res.banner_ad_intervals){
+          data.ad_intervals = res.banner_ad_intervals
+        }
+        this.setData(data)
+      }
+    })
   },
 
   /**

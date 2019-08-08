@@ -160,12 +160,15 @@ class RoomFollow(BaseView):
     name = "关注会议室"
 
     def get_context(self, request, *args, **kwargs):
-        self.get_room_follow(request.params.room_id, request.user.pk).un_delete()
+        if len(request.params.room_id) > 50:
+            raise CustomError(ErrCode.ERR_COMMON_BAD_PARAM)
+        for room_id in request.params.room_id:
+            self.get_room_follow(room_id, request.user.pk).un_delete()
         return {}
 
     class Meta:
         param_fields = (
-            ('room_id', fields.IntegerField(help_text='会议室ID')),
+            ('room_id', fields.SplitCharField(help_text='会议室ID列表', sep=',', field=fields.IntegerField())),
         )
 
 
