@@ -9,6 +9,7 @@ const getApiViewWS = (server, need_connect) => {
   return new Promise((resolve, reject) => {
     if (!apiViewWSs.hasOwnProperty(ws_path)) {
       apiViewWSs[ws_path] = new ApiViewWS(ws_path)
+      // apiViewWSs[ws_path] = new ApiViewWS("ws://10.100.0.7:9092/wsapi")
     }
     if (!need_connect){
       resolve(apiViewWSs[ws_path])
@@ -93,16 +94,13 @@ const request = function({server, path, data, method, header} = {}){
     }
   }
   return new Promise((resolve, reject) => {
-    
-    wx.showLoading({
-      title: '加载中...',
-    })
+    wx.showNavigationBarLoading()
     let resolve_callback = res => {
-      wx.hideLoading()
+      wx.hideNavigationBarLoading()
       resolve(res)
     }
     let reject_callback = res => {
-      wx.hideLoading()
+      wx.hideNavigationBarLoading()
       wx.showToast({
         icon: 'none',
         title: res

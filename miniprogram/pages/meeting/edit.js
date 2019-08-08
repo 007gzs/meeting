@@ -43,7 +43,11 @@ Page({
       })
     }
   },
-  save: function(){
+  save: function () {
+    wx.showLoading({
+      mask: true,
+      title: '加载中...',
+    })
     if (this.data.meeting_id <= 0) {
       app.api.api_meeting_reserve({
         room_id: this.data.room_id, 
@@ -53,9 +57,12 @@ Page({
         start_time: this.data.start_time, 
         end_time: this.data.end_time
       }).then(res => {
+        wx.hideLoading()
         wx.redirectTo({
           url: "detail?meeting_id="+res.id
         })
+      }).catch(res => {
+        wx.hideLoading()
       })
     }else{
       app.api.api_meeting_edit({
@@ -63,7 +70,10 @@ Page({
         name: this.data.name,
         description: this.data.description
       }).then(res => {
+        wx.hideLoading()
         wx.navigateBack()
+      }).catch(res => {
+        wx.hideLoading()
       })
     }
   },

@@ -36,7 +36,10 @@ Page({
     })
   },
   save: function() {
-
+    wx.showLoading({
+      mask: true,
+      title: '加载中...',
+    })
     if (this.data.room_id > 0) {
       app.api.api_meeting_room_edit({
         room_id: this.data.room_id,
@@ -44,7 +47,10 @@ Page({
         description: this.data.description,
         create_user_manager: this.data.create_user_manager
       }).then(res => {
+        wx.hideLoading()
         wx.navigateBack()
+      }).catch(res => {
+        wx.hideLoading()
       })
     } else {
       app.api.api_meeting_room_create({
@@ -52,9 +58,12 @@ Page({
         description: this.data.description,
         create_user_manager: this.data.create_user_manager
       }).then(res => {
+        wx.hideLoading()
         wx.redirectTo({
           url: 'detail?room_id='+res.id,
         })
+      }).catch(res => {
+        wx.hideLoading()
       })
     }
   },
