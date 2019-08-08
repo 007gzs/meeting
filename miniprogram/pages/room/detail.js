@@ -170,7 +170,7 @@ Page({
     }
     return {
       title: title,
-      page: '/pages/room/detail?room_id=' + this.data.room_id
+      path: '/pages/room/detail?room_id=' + this.data.room_id
     }
   }
 })

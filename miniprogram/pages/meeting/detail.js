@@ -151,7 +151,7 @@ Page({
     }
     return {
       title: title,
-      page: '/pages/meeting/detail?meeting_id='+this.data.meeting_id
+      path: '/pages/meeting/detail?meeting_id='+this.data.meeting_id
     }
   }
 })

@@ -95,10 +95,9 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-
     let room_ids = options.room_ids
     if (room_ids) {
-      this.api.api_meeting_room_follow({room_id: room_ids}).then(res => {
+      app.api.api_meeting_room_follow({room_id: room_ids}).then(res => {
         this.refresh()
       })
     }
@@ -169,7 +168,7 @@ Page({
     }
     return {
       title: title.join(" "),
-      page: '/pages/room/list?room_ids=' + this.data.shareSelect.join(",")
+      path: '/pages/room/list?room_ids=' + this.data.shareSelect.join(",")
     }
   }
 })

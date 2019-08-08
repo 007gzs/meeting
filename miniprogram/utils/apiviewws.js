@@ -96,8 +96,12 @@ const ApiViewWS = function (ws_path, common_listener) {
   this.connect = () => {
     return new Promise((resolve, reject) => {
       if (this.task_status === TASK_STATUS.OK){
-        resolve(this)
-        return
+        if(this.task.readyState === 1){
+          resolve(this)
+          return
+        }else{
+          this.task_status === TASK_STATUS.ERROR
+        }
       }
       this.connects.push([resolve, reject])
       if (this.task_status < 0){
