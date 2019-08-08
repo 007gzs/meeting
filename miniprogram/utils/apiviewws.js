@@ -63,6 +63,7 @@ const ApiViewWS = function (ws_path, common_listener) {
       url: this.ws_path,
       header: header,
       tcpNoDelay: false,
+      protocols: ["apiview"],
       method: "GET",
       success: res => {
       },

@@ -107,6 +107,8 @@ CACHES = {
 
 WSGI_APPLICATION = 'meeting.wsgi.application'
 
+CHANNELS_WS_PROTOCOLS = "apiview"
+
 CHANNEL_LAYERS = {
     "default": {
         "ROUTING": "meeting.routing.channel_routing",
@@ -275,6 +277,11 @@ LOGGING = {
         },
     },
     'loggers': {
+        'daphne': {
+            'handlers': ['console', ],
+            'level': 'DEBUG',
+            'propagate': True
+        },
         'django': {
             'handlers': ['console', ],
             'level': 'INFO',
