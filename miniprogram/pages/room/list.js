@@ -7,36 +7,57 @@ Page({
    * 页面的初始数据
    */
   data: {
-    tags: ["关注", "创建"],
+    tags: ["关注", "创建", ""],
     tabs: ["我关注的", "我创建的"],
     activeIndex: 0,
-    rooms: [null, null],
+    rooms: [null, null, null],
+    shareSelect: []
   },
-  refreshFollowRooms: function () {
-    app.api.api_meeting_follow_rooms().then(res => {
-      this.data.rooms[0] = res
-      this.setData({ rooms: this.data.rooms })
-    })
-  },
-  refreshCreateRooms: function () {
+  refreshShareRooms: function () {
     app.api.api_meeting_create_rooms().then(res => {
       this.data.rooms[1] = res
-      this.setData({ rooms: this.data.rooms })
+      app.api.api_meeting_follow_rooms().then(res => {
+        this.data.rooms[0] = res
+        this.data.rooms[2] = []
+        let ids = []
+        for(let index in [0,1]){
+          for (let i in this.data.rooms[index]){
+            if (ids.indexOf(this.data.rooms[index][i].id) < 0){
+              ids.push(this.data.rooms[index][i].id)
+              this.data.rooms[index][i].checked = false
+              this.data.rooms[2].push(this.data.rooms[index][i])
+            }
+          }
+        }
+        let setdata = {
+          rooms: this.data.rooms,
+          tabs: ["我关注的", "我创建的"]
+        }
+        if (this.data.rooms[2].length > 1){
+          setdata.tabs.push("批量分享")
+        }else if (this.data.activeIndex == 2){
+          setdata.activeIndex = 0
+        }
+        this.setData(setdata)
+      })
     })
   },
   refresh: function(){
-    switch (this.data.activeIndex){
-      case 0:
-        this.refreshFollowRooms()
-        break
-      case 1:
-        this.refreshCreateRooms()
-        break
-    }
+    this.refreshShareRooms()
   },
   reserve: function(e){
     wx.navigateTo({
       url: '../meeting/reserve',
+    })
+  },
+  shareSelectChange(e){
+    this.data.shareSelect = e.detail.value.map(n => { return parseInt(n) })
+    for(let i in this.data.rooms[2]){
+      this.data.rooms[2][i].checked = this.data.shareSelect.indexOf(this.data.rooms[2][i].id) >= 0
+    }
+    this.setData({
+      shareSelect: this.data.shareSelect,
+      rooms: this.data.rooms
     })
   },
   my: function (e) {
@@ -56,7 +77,8 @@ Page({
   },
   tabClick: function (e) {
     this.setData({
-      activeIndex: parseInt(e.currentTarget.id)
+      activeIndex: parseInt(e.currentTarget.id),
+      shareSelect: []
     });
     this.refresh()
   },
@@ -134,5 +156,20 @@ Page({
    */
   onReachBottom: function () {
 
+  },
+  onShareAppMessage: function () {
+    if (this.data.shareSelect.length == 0) {
+      return {}
+    }
+    let title = []
+    for(let i in this.data.rooms[2]){
+      if (this.data.shareSelect.indexOf(this.data.rooms[2][i].id) >= 0){
+        title.push(this.data.rooms[2][i].name)
+      }
+    }
+    return {
+      title: title.join(" "),
+      page: '/pages/room/list?room_ids=' + this.data.shareSelect.join(",")
+    }
   }
 })
