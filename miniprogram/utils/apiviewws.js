@@ -57,6 +57,7 @@ const ApiViewWS = function (ws_path, common_listener) {
     }
   }
   this._new_task = () => {
+    this.showLoading = true
     wx.showLoading({
       title: '加载中',
     })
@@ -74,9 +75,10 @@ const ApiViewWS = function (ws_path, common_listener) {
       },
       fail: res => {
         reject("网络错误")
-      },
-      complete: res => {
-        wx.hideLoading()
+        if (this.showLoading){
+          this.showLoading = false
+          wx.hideLoading()
+        }
       }
     })
     this.task.onClose(res => {
@@ -90,6 +92,10 @@ const ApiViewWS = function (ws_path, common_listener) {
     })
     this.task.onError(res => {
       this.task_status = TASK_STATUS.ERROR
+      if (this.showLoading) {
+        this.showLoading = false
+        wx.hideLoading()
+      }
       this._failall()
       this. _connects_callback(1, "网络错误")
     })
@@ -98,6 +104,10 @@ const ApiViewWS = function (ws_path, common_listener) {
     })
     this.task.onOpen(res => {
       this.task_status = TASK_STATUS.OK
+      if (this.showLoading) {
+        this.showLoading = false
+        wx.hideLoading()
+      }
       this. _connects_callback(0, this)
     })
   }
@@ -136,7 +146,7 @@ const ApiViewWS = function (ws_path, common_listener) {
     if (this.task_status > 0){
       return
     }
-    if (app && this.task_status === TASK_STATUS.OK && (app.nowDate() - this.last_msg_time) < (check_time * 1000)){
+    if (app && this.task_status === TASK_STATUS.OK && this.last_msg_time && (app.nowDate() - this.last_msg_time) > (check_time * 1000)){
       return
     }
     this.reconnect()
