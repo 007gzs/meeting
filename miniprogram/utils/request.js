@@ -4,6 +4,11 @@ const httpCookie = require('./http-cookie.js')
 const ApiViewWS = require('./apiviewws.js')
 let app = getApp()
 let apiViewWSs = {}
+const reconnectApiViews = (check_time) => {
+  for(let i in apiViewWSs){
+    apiViewWSs[i].check_and_reconnect(check_time)
+  }
+}
 const getApiViewWS = (server, need_connect) => {
   const ws_path = "ws" + server.substring(4) + "/wsapi"
   return new Promise((resolve, reject) => {
@@ -111,3 +116,4 @@ const request = function({server, path, data, method, header} = {}){
   })
 }
 module.exports = request
+module.exports.reconnectApiViews = reconnectApiViews

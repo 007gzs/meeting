@@ -20,6 +20,7 @@ const ApiViewWS = function (ws_path, common_listener) {
   this.ws_path = ws_path
   this.task_status = TASK_STATUS.INIT
   this.connects = []
+  this.last_msg_time = null
   this._proc_data = (data) => {
     let reqid = data['reqid']
     if (reqid === undefined) {
@@ -33,6 +34,7 @@ const ApiViewWS = function (ws_path, common_listener) {
     }
     let server_time = new Date(data["server_time"])
     if (!isNaN(server_time)) {
+      this.last_msg_time = server_time
       app.globalData.timeDifference = server_time.getTime() - new Date().getTime()
     }
     let listener = this.listenerList[reqid]
@@ -55,6 +57,9 @@ const ApiViewWS = function (ws_path, common_listener) {
     }
   }
   this._new_task = () => {
+    wx.showLoading({
+      title: '加载中',
+    })
     let header = {
       'Cookie': httpCookie.getCookieForReq()
     }
@@ -69,6 +74,9 @@ const ApiViewWS = function (ws_path, common_listener) {
       },
       fail: res => {
         reject("网络错误")
+      },
+      complete: res => {
+        wx.hideLoading()
       }
     })
     this.task.onClose(res => {
@@ -123,6 +131,15 @@ const ApiViewWS = function (ws_path, common_listener) {
     }else{
       this._new_task()
     }
+  }
+  this.check_and_reconnect = (check_time) => {
+    if (this.task_status > 0){
+      return
+    }
+    if (app && this.task_status === TASK_STATUS.OK && (app.nowDate() - this.last_msg_time) < (check_time * 1000)){
+      return
+    }
+    this.reconnect()
   }
   this.req = (path, data, listener) => {
     let reqid = this.gen_reqid()

@@ -1,6 +1,7 @@
 "use strict";
 //app.js
 const api = require("./utils/api.js")
+const request = require("./utils/request.js")
 const time = require('./utils/time.js')
 const meetings = require('./utils/meetings.js')
 App({
@@ -17,6 +18,7 @@ App({
     this.userInfo()
   },
   onShow: function(options){
+    request.reconnectApiViews(5)
   },
   onHide: function (options) {
   },
