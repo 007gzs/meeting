@@ -8,6 +8,11 @@ App({
   time: time,
   meetings: meetings,
   onLaunch: function (options) {
+
+    const updateManager = wx.getUpdateManager()
+    updateManager.onUpdateReady(function (e) {
+      updateManager.applyUpdate()
+    })
     // 获取用户信息
     this.userInfo()
   },

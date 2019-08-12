@@ -48,7 +48,7 @@ const ApiViewWS = function (ws_path, common_listener) {
       }
     }
   }
-  this._coonects_callback = (index, data) => {
+  this._connects_callback = (index, data) => {
     while(this.connects.length > 0){
       let connect = this.connects.pop()
       connect[index](data)
@@ -73,34 +73,34 @@ const ApiViewWS = function (ws_path, common_listener) {
     })
     this.task.onClose(res => {
       this._failall()
-      if (this.task_status == TASK_STATUS.RECONNECTING) {
+      if (this.task_status === TASK_STATUS.RECONNECTING) {
         this._new_task()
-      } else if (this.task_status == TASK_STATUS.CLOSEING){
+      } else if (this.task_status === TASK_STATUS.CLOSEING){
         this.task_status = TASK_STATUS.CLOSE
-        this._coonects_callback(1, "网络错误")
+        this. _connects_callback(1, "网络错误")
       }
     })
     this.task.onError(res => {
       this.task_status = TASK_STATUS.ERROR
       this._failall()
-      this._coonects_callback(1, "网络错误")
+      this. _connects_callback(1, "网络错误")
     })
     this.task.onMessage(res => {
       this._proc_data(JSON.parse(res.data))
     })
     this.task.onOpen(res => {
       this.task_status = TASK_STATUS.OK
-      this._coonects_callback(0, this)
+      this. _connects_callback(0, this)
     })
   }
   this.connect = () => {
     return new Promise((resolve, reject) => {
       if (this.task_status === TASK_STATUS.OK){
-        if(this.task.readyState === 1){
+        if (this.task.readyState === 1){
           resolve(this)
           return
         }else{
-          this.task_status === TASK_STATUS.ERROR
+          this.task_status = TASK_STATUS.ERROR
         }
       }
       this.connects.push([resolve, reject])
