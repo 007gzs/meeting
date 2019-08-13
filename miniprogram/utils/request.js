@@ -14,7 +14,6 @@ const getApiViewWS = (server, need_connect) => {
   return new Promise((resolve, reject) => {
     if (!apiViewWSs.hasOwnProperty(ws_path)) {
       apiViewWSs[ws_path] = new ApiViewWS(ws_path)
-      // apiViewWSs[ws_path] = new ApiViewWS("ws://10.100.0.7:9092/wsapi")
     }
     if (!need_connect){
       resolve(apiViewWSs[ws_path])

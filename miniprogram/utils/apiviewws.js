@@ -84,7 +84,7 @@ const ApiViewWS = function (ws_path, common_listener) {
     this.task.onClose(res => {
       this._failall()
       if (this.task_status === TASK_STATUS.RECONNECTING) {
-        this._new_task()
+        //this._new_task()
       } else if (this.task_status === TASK_STATUS.CLOSEING){
         this.task_status = TASK_STATUS.CLOSE
         this. _connects_callback(1, "网络错误")
@@ -113,6 +113,7 @@ const ApiViewWS = function (ws_path, common_listener) {
   }
   this.connect = () => {
     return new Promise((resolve, reject) => {
+      //console.log("connect", this.task_status, this.task)
       if (this.task_status === TASK_STATUS.OK){
         if (this.task.readyState === 1){
           resolve(this)
@@ -138,15 +139,14 @@ const ApiViewWS = function (ws_path, common_listener) {
     this.task_status = TASK_STATUS.RECONNECTING
     if(this.task){
       this.task.close()
-    }else{
-      this._new_task()
     }
+    this._new_task()
   }
   this.check_and_reconnect = (check_time) => {
-    if (this.task_status > 0){
+    if (this.task_status > 0 || !app){
       return
     }
-    if (app && this.task_status === TASK_STATUS.OK && this.last_msg_time && (app.nowDate() - this.last_msg_time) > (check_time * 1000)){
+    if (this.task_status === TASK_STATUS.OK && this.last_msg_time && (app.nowDate() - this.last_msg_time) < (check_time * 1000)){
       return
     }
     this.reconnect()
