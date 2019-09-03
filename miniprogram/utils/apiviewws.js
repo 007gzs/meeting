@@ -74,7 +74,7 @@ const ApiViewWS = function (ws_path, common_listener) {
       success: res => {
       },
       fail: res => {
-        reject("网络错误")
+        this._connects_callback(1, "网络错误")
         if (this.showLoading){
           this.showLoading = false
           wx.hideLoading()
@@ -87,7 +87,7 @@ const ApiViewWS = function (ws_path, common_listener) {
         //this._new_task()
       } else if (this.task_status === TASK_STATUS.CLOSEING){
         this.task_status = TASK_STATUS.CLOSE
-        this. _connects_callback(1, "网络错误")
+        this._connects_callback(1, "网络错误")
       }
     })
     this.task.onError(res => {
@@ -97,7 +97,7 @@ const ApiViewWS = function (ws_path, common_listener) {
         wx.hideLoading()
       }
       this._failall()
-      this. _connects_callback(1, "网络错误")
+      this._connects_callback(1, "网络错误")
     })
     this.task.onMessage(res => {
       this._proc_data(JSON.parse(res.data))
@@ -108,7 +108,7 @@ const ApiViewWS = function (ws_path, common_listener) {
         this.showLoading = false
         wx.hideLoading()
       }
-      this. _connects_callback(0, this)
+      this._connects_callback(0, this)
     })
   }
   this.connect = () => {
