@@ -98,6 +98,9 @@ Page({
     }
     const room_id = e.detail.title_id
     const time = e.detail.label_id
+    if (!this.data.td_data || !this.data.td_data[room_id]){
+      return
+    }
     const td_data = this.data.td_data[room_id][time]
     if (td_data.expire || td_data.meeting_status != 0){
       return 
