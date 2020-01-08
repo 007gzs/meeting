@@ -230,7 +230,9 @@ REST_FRAMEWORK = {
 if DEBUG:
     REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'].append('apiview.renderers.BrowsableAPIRenderer')
 
-GRAPPELLI_ADMIN_TITLE = u'管理后台'
+EMAIL_SUBJECT_PREFIX = '[meeting]'
+
+GRAPPELLI_ADMIN_TITLE = '管理后台'
 
 ROOT_URLCONF = 'meeting.urls'
 
