@@ -1,5 +1,6 @@
 
 "use strict";
+const USE_WEBSOCKET = true
 const httpCookie = require('./http-cookie.js')
 const ApiViewWS = require('./apiviewws.js')
 let app = getApp()
@@ -43,7 +44,7 @@ const check_res = function (res, server, path, data, method, header, resolve, re
   }
 }
 const ws_request = function (server, path, data, method, header, resolve, reject, check_login) {
-  if (path === '/api/wechat/login') {
+  if (!USE_WEBSOCKET || path === '/api/wechat/login') {
     wx_request(server, path, data, method, header, resolve, reject, check_login)
     return
   }

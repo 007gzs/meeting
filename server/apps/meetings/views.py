@@ -90,28 +90,46 @@ class RoomCreate(BaseView):
         )
 
 
-@site
-class RoomEdit(BaseView):
-    name = "修改会议室"
+class RoomBase(BaseView):
+    check_manager = False
 
-    def get_context(self, request, *args, **kwargs):
+    def check_api_permissions(self, request, *args, **kwargs):
+        super(RoomBase, self).check_api_permissions(request, *args, **kwargs)
         room = models.Room.objects.filter(pk=request.params.room_id).first()
         if room is None:
             raise CustomError(ErrCode.ERR_COMMON_BAD_PARAM)
-        if room.create_user_id != request.user.pk:
-            raise CustomError(ErrCode.ERR_COMMON_PERMISSION)
-        room.name = request.params.name
-        room.description = request.params.description
+        setattr(self, 'room', room)
+        if self.check_manager:
+            if room.create_user_id != request.user.pk:
+                raise CustomError(ErrCode.ERR_COMMON_PERMISSION)
+
+    def get_context(self, request, *args, **kwargs):
+        raise NotImplementedError
+
+    class Meta:
+        path = '/'
+        param_fields = (
+            ('meeting_id', fields.IntegerField(help_text='会议ID')),
+        )
+
+
+@site
+class RoomEdit(RoomBase):
+    name = "修改会议室"
+    check_manager = True
+
+    def get_context(self, request, *args, **kwargs):
+        self.room.name = request.params.name
+        self.room.description = request.params.description
         update_fields = ['name', 'description']
         if request.params.create_user_manager is not None:
-            room.create_user_manager = request.params.create_user_manager
+            self.room.create_user_manager = request.params.create_user_manager
             update_fields.append('create_user_manager')
-        room.save(force_update=True, update_fields=update_fields)
-        return serializer.RoomSerializer(room, request=request).data
+        self.room.save(force_update=True, update_fields=update_fields)
+        return serializer.RoomSerializer(self.room, request=request).data
 
     class Meta:
         param_fields = (
-            ('room_id', fields.IntegerField(help_text='会议室ID')),
             ('name', fields.CharField(help_text='名称', max_length=64)),
             ('description', fields.CharField(help_text='描述', max_length=255, required=False, default="", omit="")),
             ('create_user_manager', fields.NullBooleanField(
@@ -121,38 +139,21 @@ class RoomEdit(BaseView):
 
 
 @site
-class RoomDelete(BaseView):
+class RoomDelete(RoomBase):
     name = "删除会议室"
+    check_manager = True
 
     def get_context(self, request, *args, **kwargs):
-        room = models.Room.objects.filter(pk=request.params.room_id).first()
-        if room is None:
-            raise CustomError(ErrCode.ERR_COMMON_BAD_PARAM)
-        if room.create_user_id != request.user.pk:
-            raise CustomError(ErrCode.ERR_COMMON_PERMISSION)
-        room.delete()
+        self.room.delete()
         return {}
-
-    class Meta:
-        param_fields = (
-            ('room_id', fields.IntegerField(help_text='会议室ID')),
-        )
 
 
 @site
-class RoomInfo(BaseView):
+class RoomInfo(RoomBase):
     name = "会议室信息"
 
     def get_context(self, request, *args, **kwargs):
-        room = models.Room.objects.filter(pk=request.params.room_id).first()
-        if room is None:
-            raise CustomError(ErrCode.ERR_COMMON_BAD_PARAM)
-        return serializer.RoomDetailSerializer(room, request=request).data
-
-    class Meta:
-        param_fields = (
-            ('room_id', fields.IntegerField(help_text='会议室ID')),
-        )
+        return serializer.RoomDetailSerializer(self.room, request=request).data
 
 
 @site
@@ -316,123 +317,110 @@ class Reserve(BaseView):
         )
 
 
-@site
-class Info(BaseView):
-    name = "会议详情"
+class MeetingBase(BaseView):
+    check_manager = False
 
-    def get_context(self, request, *args, **kwargs):
+    def check_api_permissions(self, request, *args, **kwargs):
+        super(MeetingBase, self).check_api_permissions(request, *args, **kwargs)
         meeting = models.Meeting.objects.filter(pk=request.params.meeting_id).first()
         if meeting is None:
             raise CustomError(ErrCode.ERR_COMMON_BAD_PARAM)
-        return serializer.MeetingDetailSerializer(meeting, request=request).data
+        setattr(self, 'meeting', meeting)
+        if self.check_manager:
+            if meeting.user_id != request.user.pk and (
+                    not meeting.room.create_user_manager or request.user.pk != meeting.room.create_user_id
+            ):
+                raise CustomError(ErrCode.ERR_COMMON_PERMISSION)
+
+    def get_context(self, request, *args, **kwargs):
+        raise NotImplementedError
 
     class Meta:
+        path = '/'
         param_fields = (
             ('meeting_id', fields.IntegerField(help_text='会议ID')),
         )
 
 
 @site
-class Edit(BaseView):
-    name = "会议修改"
+class Info(MeetingBase):
+    name = "会议详情"
 
     def get_context(self, request, *args, **kwargs):
-        meeting = models.Meeting.objects.filter(pk=request.params.meeting_id).first()
-        if meeting is None:
-            raise CustomError(ErrCode.ERR_COMMON_BAD_PARAM)
+        return serializer.MeetingDetailSerializer(self.meeting, request=request).data
 
-        if meeting.user_id != request.user.pk and (
-                not meeting.room.create_user_manager or request.user.pk != meeting.room.create_user_id
-        ):
-            raise CustomError(ErrCode.ERR_COMMON_PERMISSION)
+
+@site
+class Edit(MeetingBase):
+    name = "会议修改"
+    check_manager = True
+
+    def get_context(self, request, *args, **kwargs):
         data = dict()
         update_fields = list()
-        if meeting.name != request.params.name:
-            data['name'] = {'from': meeting.name, 'to': request.params.name}
+        if self.meeting.name != request.params.name:
+            data['name'] = {'from': self.meeting.name, 'to': request.params.name}
             update_fields.append('name')
-            meeting.name = request.params.name
-        if meeting.description != request.params.description:
-            data['description'] = {'from': meeting.description, 'to': request.params.description}
+            self.meeting.name = request.params.name
+        if self.meeting.description != request.params.description:
+            data['description'] = {'from': self.meeting.description, 'to': request.params.description}
             update_fields.append('description')
-            meeting.name = request.params.name
+            self.meeting.name = request.params.name
         if update_fields:
             with transaction.atomic():
-                meeting.save(force_update=True, update_fields=update_fields)
+                self.meeting.save(force_update=True, update_fields=update_fields)
                 models.MeetingTrace.objects.create(
-                    meeting_id=meeting.pk,
+                    meeting_id=self.meeting.pk,
                     user_id=request.user.pk,
-                    owner=request.user.pk == meeting.user_id,
+                    owner=request.user.pk == self.meeting.user_id,
                     type=constants.MEETING_TRACE_TYPE_CODE.EDIT.code,
                     data=json.dumps(data, ensure_ascii=False)
                 )
-        return serializer.MeetingDetailSerializer(meeting, request=request).data
+        return serializer.MeetingDetailSerializer(self.meeting, request=request).data
 
     class Meta:
         param_fields = (
-            ('meeting_id', fields.IntegerField(help_text='会议ID')),
             ('name', fields.CharField(help_text='名称', max_length=64)),
             ('description', fields.CharField(help_text='描述', max_length=255, required=False, default="", omit="")),
         )
 
 
 @site
-class Cancel(BaseView):
+class Cancel(MeetingBase):
     name = "取消会议"
+    check_manager = True
 
     def get_context(self, request, *args, **kwargs):
-        meeting = models.Meeting.objects.filter(pk=request.params.meeting_id).first()
-        if meeting is None:
-            raise CustomError(ErrCode.ERR_COMMON_BAD_PARAM)
-        if meeting.user_id != request.user.pk and (
-                not meeting.room.create_user_manager or request.user.pk != meeting.room.create_user_id
-        ):
-            raise CustomError(ErrCode.ERR_COMMON_PERMISSION)
         with transaction.atomic():
-            meeting.delete()
+            self.meeting.delete()
             models.MeetingTrace.objects.create(
-                meeting_id=meeting.pk,
+                meeting_id=self.meeting.pk,
                 user_id=request.user.pk,
-                owner=request.user.pk == meeting.user_id,
+                owner=request.user.pk == self.meeting.user_id,
                 type=constants.MEETING_TRACE_TYPE_CODE.DELETE.code
             )
         return {}
 
-    class Meta:
-        param_fields = (
-            ('meeting_id', fields.IntegerField(help_text='会议ID')),
-        )
-
 
 @site
-class Join(BaseView):
+class Join(MeetingBase):
     name = "参加会议"
 
     def get_context(self, request, *args, **kwargs):
-        meeting = models.Meeting.objects.filter(pk=request.params.meeting_id).first()
-        if meeting is None:
-            raise CustomError(ErrCode.ERR_COMMON_BAD_PARAM)
         attendee, _ = models.MeetingAttendee.default_manager.get_or_create(
             meeting_id=request.params.meeting_id,
             user_id=request.user.pk
         )
         attendee.un_delete()
-        self.get_room_follow(meeting.room_id, request.user.pk)
-        return serializer.MeetingDetailSerializer(meeting, request=request).data
-
-    class Meta:
-        param_fields = (
-            ('meeting_id', fields.IntegerField(help_text='会议ID')),
-        )
+        self.get_room_follow(self.meeting.room_id, request.user.pk)
+        return serializer.MeetingDetailSerializer(self.meeting, request=request).data
 
 
 @site
-class Leave(BaseView):
+class Leave(MeetingBase):
     name = "取消参加会议"
 
     def get_context(self, request, *args, **kwargs):
-        meeting = models.Meeting.objects.filter(pk=request.params.meeting_id).first()
-        if meeting is None:
-            raise CustomError(ErrCode.ERR_COMMON_BAD_PARAM)
         attendee = models.MeetingAttendee.objects.filter(
             meeting_id=request.params.meeting_id,
             user_id=request.user.pk
@@ -440,12 +428,7 @@ class Leave(BaseView):
         if attendee is None:
             raise CustomError(ErrCode.ERR_COMMON_BAD_PARAM)
         attendee.delete()
-        return serializer.MeetingDetailSerializer(meeting, request=request).data
-
-    class Meta:
-        param_fields = (
-            ('meeting_id', fields.IntegerField(help_text='会议ID')),
-        )
+        return serializer.MeetingDetailSerializer(self.meeting, request=request).data
 
 
 urlpatterns = site.urlpatterns

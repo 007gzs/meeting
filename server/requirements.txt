@@ -1,12 +1,12 @@
 Pillow
 mysqlclient
 cryptography
-redis
+redis<3
 hiredis
 gevent
 celery
 requests
-django
+django<3
 channels<2
 asgi_redis
 django-grappelli
