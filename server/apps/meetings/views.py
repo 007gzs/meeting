@@ -365,7 +365,7 @@ class Edit(MeetingBase):
         if self.meeting.description != request.params.description:
             data['description'] = {'from': self.meeting.description, 'to': request.params.description}
             update_fields.append('description')
-            self.meeting.name = request.params.name
+            self.meeting.description = request.params.description
         if update_fields:
             with transaction.atomic():
                 self.meeting.save(force_update=True, update_fields=update_fields)
