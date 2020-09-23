@@ -1,8 +1,23 @@
 # encoding: utf-8
 from __future__ import absolute_import, unicode_literals
 
-from apiview.consumers import ApiViewConsumer
+from channels.auth import AuthMiddlewareStack
+from channels.routing import ProtocolTypeRouter, URLRouter
+from django.urls import path
 
-channel_routing = [
-    ApiViewConsumer.as_route(path="^/wsapi")
-]
+from cool.views.websocket import CoolBFFAPIConsumer
+
+
+class MeetingConsumer(CoolBFFAPIConsumer):
+
+    def accept(self, subprotocol=None):
+        return super().accept('apiview')
+
+
+application = ProtocolTypeRouter({
+    'websocket': AuthMiddlewareStack(
+        URLRouter(
+            [path('wsapi', MeetingConsumer)],
+        )
+    ),
+})

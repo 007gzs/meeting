@@ -4,19 +4,19 @@ from __future__ import absolute_import, unicode_literals
 import datetime
 import json
 
-from apiview import utility
-from apiview.err_code import ErrCode
-from apiview.exceptions import CustomError
-from apiview.views import ViewSite, fields
+from cool.views import ViewSite, CoolAPIException, ErrorCode
+from cool.views.fields import SplitCharField
+from rest_framework import fields
 from constance import config
 from django.db import transaction
 from django.db.models import Q
 
 from apps.wechat import biz
 from apps.wechat.views import UserBaseView
-from core.constants import DELETE_CODE
+from core import utils, constants as core_constants
 
 from . import models, serializer, constants
+
 
 site = ViewSite(name='meetings', app_name='meetings')
 
@@ -29,6 +29,15 @@ class BaseView(UserBaseView):
             room_id=room_id, user_id=user_id
         )
         return follow
+
+    @classmethod
+    def response_info_date_time_settings(cls):
+        return {
+            'start_time': '开始时间',
+            'end_time': '结束时间',
+            'start_date': '开始日期',
+            'end_date': '结束日期'
+        }
 
     @staticmethod
     def get_date_time_settings():
@@ -62,6 +71,7 @@ class Config(BaseView):
 @site
 class RoomCreate(BaseView):
     name = "创建会议室"
+    response_info_serializer_class = serializer.RoomSerializer
 
     def get_context(self, request, *args, **kwargs):
         room = models.Room.objects.create(
@@ -76,17 +86,15 @@ class RoomCreate(BaseView):
             )
             room.save(update_fields=['qr_code', ], force_update=True)
         except Exception:
-            utility.reportExceptionByMail("get_wxa_code_unlimited_file")
+            utils.exception_logging.exception("get_wxa_code_unlimited_file", extra={'request': request})
         self.get_room_follow(room.pk, request.user.pk)
         return serializer.RoomSerializer(room, request=request).data
 
     class Meta:
         param_fields = (
-            ('name', fields.CharField(help_text='名称', max_length=64)),
-            ('description', fields.CharField(help_text='描述', max_length=255)),
-            ('create_user_manager', fields.BooleanField(
-                help_text='创建人管理权限', required=False, default=False, omit=False
-            )),
+            ('name', fields.CharField(label='名称', max_length=64)),
+            ('description', fields.CharField(label='描述', max_length=255)),
+            ('create_user_manager', fields.BooleanField(label='创建人管理权限', required=False, default=False)),
         )
 
 
@@ -97,11 +105,11 @@ class RoomBase(BaseView):
         super(RoomBase, self).check_api_permissions(request, *args, **kwargs)
         room = models.Room.objects.filter(pk=request.params.room_id).first()
         if room is None:
-            raise CustomError(ErrCode.ERR_COMMON_BAD_PARAM)
+            raise CoolAPIException(ErrorCode.ERROR_BAD_PARAMETER)
         setattr(self, 'room', room)
         if self.check_manager:
             if room.create_user_id != request.user.pk:
-                raise CustomError(ErrCode.ERR_COMMON_PERMISSION)
+                raise CoolAPIException(ErrorCode.ERROR_PERMISSION)
 
     def get_context(self, request, *args, **kwargs):
         raise NotImplementedError
@@ -109,7 +117,7 @@ class RoomBase(BaseView):
     class Meta:
         path = '/'
         param_fields = (
-            ('meeting_id', fields.IntegerField(help_text='会议ID')),
+            ('meeting_id', fields.IntegerField(label='会议ID')),
         )
 
 
@@ -117,6 +125,7 @@ class RoomBase(BaseView):
 class RoomEdit(RoomBase):
     name = "修改会议室"
     check_manager = True
+    response_info_serializer_class = serializer.RoomSerializer
 
     def get_context(self, request, *args, **kwargs):
         self.room.name = request.params.name
@@ -130,11 +139,9 @@ class RoomEdit(RoomBase):
 
     class Meta:
         param_fields = (
-            ('name', fields.CharField(help_text='名称', max_length=64)),
-            ('description', fields.CharField(help_text='描述', max_length=255, required=False, default="", omit="")),
-            ('create_user_manager', fields.NullBooleanField(
-                help_text='创建人管理权限', required=False, default=None, omit=None
-            )),
+            ('name', fields.CharField(label='名称', max_length=64)),
+            ('description', fields.CharField(label='描述', max_length=255, required=False, default="")),
+            ('create_user_manager', fields.NullBooleanField(label='创建人管理权限', required=False, default=None)),
         )
 
 
@@ -151,6 +158,7 @@ class RoomDelete(RoomBase):
 @site
 class RoomInfo(RoomBase):
     name = "会议室信息"
+    response_info_serializer_class = serializer.RoomDetailSerializer
 
     def get_context(self, request, *args, **kwargs):
         return serializer.RoomDetailSerializer(self.room, request=request).data
@@ -162,14 +170,14 @@ class RoomFollow(BaseView):
 
     def get_context(self, request, *args, **kwargs):
         if len(request.params.room_id) > 50:
-            raise CustomError(ErrCode.ERR_COMMON_BAD_PARAM)
+            raise CoolAPIException(ErrorCode.ERROR_BAD_PARAMETER)
         for room_id in request.params.room_id:
             self.get_room_follow(room_id, request.user.pk).un_delete()
         return {}
 
     class Meta:
         param_fields = (
-            ('room_id', fields.SplitCharField(help_text='会议室ID列表', sep=',', field=fields.IntegerField())),
+            ('room_id', SplitCharField(label='会议室ID列表', sep=',', child=fields.IntegerField())),
         )
 
 
@@ -180,23 +188,25 @@ class RoomUnFollow(BaseView):
     def get_context(self, request, *args, **kwargs):
         follow = models.UserFollowRoom.objects.filter(room_id=request.params.room_id, user_id=request.user.pk).first()
         if follow is None:
-            raise CustomError(ErrCode.ERR_COMMON_BAD_PARAM)
+            raise CoolAPIException(ErrorCode.ERROR_BAD_PARAMETER)
         follow.delete()
         return {}
 
     class Meta:
         param_fields = (
-            ('room_id', fields.IntegerField(help_text='会议室ID')),
+            ('room_id', fields.IntegerField(label='会议室ID')),
         )
 
 
 @site
 class FollowRooms(BaseView):
     name = "已关注会议室列表"
+    response_info_serializer_class = serializer.RoomSerializer
+    response_many = True
 
     def get_context(self, request, *args, **kwargs):
         rooms = models.Room.objects.filter(
-            follows__user_id=request.user.pk, follows__delete_status=DELETE_CODE.NORMAL.code
+            follows__user_id=request.user.pk, follows__delete_status=core_constants.DeleteCode.NORMAL.code
         )
         return serializer.RoomSerializer(rooms, request=request, many=True).data
 
@@ -204,6 +214,8 @@ class FollowRooms(BaseView):
 @site
 class CreateRooms(BaseView):
     name = "创建会议室列表"
+    response_info_serializer_class = serializer.RoomSerializer
+    response_many = True
 
     def get_context(self, request, *args, **kwargs):
         rooms = models.Room.objects.filter(create_user_id=request.user.pk)
@@ -214,9 +226,19 @@ class CreateRooms(BaseView):
 class RoomMeetings(BaseView):
     name = "会议室预约列表"
 
+    @classmethod
+    def response_info_data(cls):
+        from cool.views.utils import get_serializer_info
+        ret = cls.response_info_date_time_settings()
+        ret.update({
+            'rooms': get_serializer_info(serializer.RoomSerializer(), True),
+            'meetings': get_serializer_info(serializer.MeetingSerializer(), True)
+        })
+        return ret
+
     def get_context(self, request, *args, **kwargs):
         if len(request.params.room_ids) > 10:
-            raise CustomError(ErrCode.ERR_COMMON_BAD_PARAM)
+            raise CoolAPIException(ErrorCode.ERROR_BAD_PARAMETER)
         d = datetime.date.today()
         if request.params.date is not None:
             d = request.params.date
@@ -233,14 +255,24 @@ class RoomMeetings(BaseView):
 
     class Meta:
         param_fields = (
-            ('room_ids', fields.SplitCharField(help_text='会议室ID列表', sep=',', field=fields.IntegerField())),
-            ('date', fields.DateField(help_text='日期', required=False, default=None, omit=None)),
+            ('room_ids', SplitCharField(label='会议室ID列表', sep=',', child=fields.IntegerField())),
+            ('date', utils.DateField(label='日期', required=False, default=None)),
         )
 
 
 @site
 class MyMeetings(BaseView):
     name = "我参与的会议列表"
+
+    @classmethod
+    def response_info_data(cls):
+        from cool.views.utils import get_serializer_info
+        ret = cls.response_info_date_time_settings()
+        ret.update({
+            'rooms': get_serializer_info(serializer.RoomSerializer(), True),
+            'meetings': get_serializer_info(serializer.MeetingSerializer(), True)
+        })
+        return ret
 
     def get_context(self, request, *args, **kwargs):
         d = datetime.date.today()
@@ -261,13 +293,14 @@ class MyMeetings(BaseView):
 
     class Meta:
         param_fields = (
-            ('date', fields.DateField(help_text='日期', required=False, default=None, omit=None)),
+            ('date', utils.DateField(label='日期', required=False, default=None)),
         )
 
 
 @site
 class Reserve(BaseView):
     name = "预约会议"
+    response_info_serializer_class = serializer.MeetingDetailSerializer
 
     @staticmethod
     def time_ok(t):
@@ -275,12 +308,12 @@ class Reserve(BaseView):
 
     def get_context(self, request, *args, **kwargs):
         if request.params.start_time >= request.params.end_time:
-            raise CustomError(ErrCode.ERR_COMMON_BAD_PARAM)
+            raise CoolAPIException(ErrorCode.ERROR_BAD_PARAMETER)
         if not self.time_ok(request.params.start_time) or not self.time_ok(request.params.end_time):
-            raise CustomError(ErrCode.ERR_COMMON_BAD_PARAM)
+            raise CoolAPIException(ErrorCode.ERROR_BAD_PARAMETER)
         now = datetime.datetime.now()
         if request.params.date == now.date() and request.params.start_time < now.time():
-            raise CustomError(ErrCode.ERR_MEETING_ROOM_TIMEOVER)
+            raise CoolAPIException(ErrorCode.ERR_MEETING_ROOM_TIMEOVER)
 
         with transaction.atomic():
             if models.Meeting.objects.filter(room_id=request.params.room_id, date=request.params.date).filter(
@@ -289,7 +322,7 @@ class Reserve(BaseView):
                     | (Q(start_time__lte=request.params.start_time) & Q(start_time__gt=request.params.end_time))
                     | (Q(end_time__lt=request.params.start_time) & Q(end_time__gte=request.params.end_time))
             ).select_for_update().exists():
-                raise CustomError(ErrCode.ERR_MEETING_ROOM_INUSE)
+                raise CoolAPIException(ErrorCode.ERR_MEETING_ROOM_INUSE)
             meeting = models.Meeting.objects.create(
                 user_id=request.user.pk,
                 room_id=request.params.room_id,
@@ -308,29 +341,30 @@ class Reserve(BaseView):
 
     class Meta:
         param_fields = (
-            ('room_id', fields.IntegerField(help_text='会议室ID')),
-            ('name', fields.CharField(help_text='名称', max_length=64)),
-            ('description', fields.CharField(help_text='描述', max_length=255, required=False, default="", omit="")),
-            ('date', fields.DateField(help_text='预定日期')),
-            ('start_time', fields.TimeField(help_text='开始时间')),
-            ('end_time', fields.TimeField(help_text='结束时间')),
+            ('room_id', fields.IntegerField(label='会议室ID')),
+            ('name', fields.CharField(label='名称', max_length=64)),
+            ('description', fields.CharField(label='描述', max_length=255, required=False, default="")),
+            ('date', fields.DateField(label='预定日期')),
+            ('start_time', fields.TimeField(label='开始时间')),
+            ('end_time', fields.TimeField(label='结束时间')),
         )
 
 
 class MeetingBase(BaseView):
     check_manager = False
+    response_info_serializer_class = serializer.MeetingDetailSerializer
 
     def check_api_permissions(self, request, *args, **kwargs):
         super(MeetingBase, self).check_api_permissions(request, *args, **kwargs)
         meeting = models.Meeting.objects.filter(pk=request.params.meeting_id).first()
         if meeting is None:
-            raise CustomError(ErrCode.ERR_COMMON_BAD_PARAM)
+            raise CoolAPIException(ErrorCode.ERROR_BAD_PARAMETER)
         setattr(self, 'meeting', meeting)
         if self.check_manager:
             if meeting.user_id != request.user.pk and (
                     not meeting.room.create_user_manager or request.user.pk != meeting.room.create_user_id
             ):
-                raise CustomError(ErrCode.ERR_COMMON_PERMISSION)
+                raise CoolAPIException(ErrorCode.ERROR_PERMISSION)
 
     def get_context(self, request, *args, **kwargs):
         raise NotImplementedError
@@ -338,7 +372,7 @@ class MeetingBase(BaseView):
     class Meta:
         path = '/'
         param_fields = (
-            ('meeting_id', fields.IntegerField(help_text='会议ID')),
+            ('meeting_id', fields.IntegerField(label='会议ID')),
         )
 
 
@@ -373,15 +407,15 @@ class Edit(MeetingBase):
                     meeting_id=self.meeting.pk,
                     user_id=request.user.pk,
                     owner=request.user.pk == self.meeting.user_id,
-                    type=constants.MEETING_TRACE_TYPE_CODE.EDIT.code,
+                    type=constants.MeetingTraceTypeCode.EDIT.code,
                     data=json.dumps(data, ensure_ascii=False)
                 )
         return serializer.MeetingDetailSerializer(self.meeting, request=request).data
 
     class Meta:
         param_fields = (
-            ('name', fields.CharField(help_text='名称', max_length=64)),
-            ('description', fields.CharField(help_text='描述', max_length=255, required=False, default="", omit="")),
+            ('name', fields.CharField(label='名称', max_length=64)),
+            ('description', fields.CharField(label='描述', max_length=255, required=False, default="")),
         )
 
 
@@ -389,6 +423,7 @@ class Edit(MeetingBase):
 class Cancel(MeetingBase):
     name = "取消会议"
     check_manager = True
+    response_info_serializer_class = None
 
     def get_context(self, request, *args, **kwargs):
         with transaction.atomic():
@@ -397,7 +432,7 @@ class Cancel(MeetingBase):
                 meeting_id=self.meeting.pk,
                 user_id=request.user.pk,
                 owner=request.user.pk == self.meeting.user_id,
-                type=constants.MEETING_TRACE_TYPE_CODE.DELETE.code
+                type=constants.MeetingTraceTypeCode.DELETE.code
             )
         return {}
 
@@ -426,9 +461,10 @@ class Leave(MeetingBase):
             user_id=request.user.pk
         )
         if attendee is None:
-            raise CustomError(ErrCode.ERR_COMMON_BAD_PARAM)
+            raise CoolAPIException(ErrorCode.ERROR_BAD_PARAMETER)
         attendee.delete()
         return serializer.MeetingDetailSerializer(self.meeting, request=request).data
 
 
 urlpatterns = site.urlpatterns
+app_name = site.app_name

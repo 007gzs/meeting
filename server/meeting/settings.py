@@ -13,7 +13,9 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 """
 
 import os
+from django.conf import global_settings
 from kombu import Exchange, Queue
+from rest_framework import ISO_8601
 
 from . import local_settings as ls
 from .local_settings import *  # NOQA
@@ -45,7 +47,6 @@ REDIS_CACHE_URL = 'redis://%s%s@%s:%s/%d' % (
 # Application definition
 
 INSTALLED_APPS = [
-    'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -55,8 +56,7 @@ INSTALLED_APPS = [
     'channels',
     'rest_framework',
     'constance',
-    'import_export',
-    'apiview',
+    'cool',
     'apps.wechat',
     'apps.meetings',
 ]
@@ -69,7 +69,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'apiview.middlewares.RequestCompatMiddleware',
 ]
 
 SESSION_ENGINE = "redis_sessions.session"
@@ -106,13 +105,11 @@ CACHES = {
 
 
 WSGI_APPLICATION = 'meeting.wsgi.application'
-
-CHANNELS_WS_PROTOCOLS = "apiview"
+ASGI_APPLICATION = "meeting.routing.application"
 
 CHANNEL_LAYERS = {
     "default": {
-        "ROUTING": "meeting.routing.channel_routing",
-        "BACKEND": "asgi_redis.RedisChannelLayer",
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [
                 'redis://%s%s@%s:%s/%d' % (
@@ -147,7 +144,6 @@ DATABASES = {
         },
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-password-validators
@@ -185,8 +181,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-KILL_CSRF = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/dev/howto/static-files/
@@ -215,24 +209,25 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.MultiPartParser',
         'rest_framework.parsers.JSONParser',
         'core.parsers.RawParser',
-
     ],
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
-        'apiview.renderers.JSONPRenderer',
     ],
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.AllowAny',),
-    'DATETIME_FORMAT': DATETIME_FORMAT,
-    'TIME_FORMAT': TIME_FORMAT,
     'DATE_FORMAT': DATE_FORMAT,
+    'DATE_INPUT_FORMATS': [ISO_8601] + global_settings.DATE_INPUT_FORMATS,
+
+    'DATETIME_FORMAT': DATETIME_FORMAT,
+    'DATETIME_INPUT_FORMATS': [ISO_8601] + global_settings.DATETIME_INPUT_FORMATS,
+
+    'TIME_FORMAT': TIME_FORMAT,
+    'TIME_INPUT_FORMATS': [ISO_8601] + global_settings.TIME_INPUT_FORMATS,
 }
 
 if DEBUG:
-    REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'].append('apiview.renderers.BrowsableAPIRenderer')
+    REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'].append('rest_framework.renderers.BrowsableAPIRenderer')
 
 EMAIL_SUBJECT_PREFIX = '[meeting]'
-
-GRAPPELLI_ADMIN_TITLE = '管理后台'
 
 ROOT_URLCONF = 'meeting.urls'
 
@@ -321,10 +316,6 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'upload')
 STATIC_ROOT = os.path.join(BASE_DIR, 'www_static')
 
-STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-)
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static/'),
 )
@@ -366,12 +357,15 @@ CELERY_TASK_ROUTES = {
 
 CELERY_TASK_ANNOTATIONS = {'*': celery_annotations_dict}
 
+DJANGO_COOL = {
+    'API_WS_REQ_ID_NAME': 'reqid',
+    'API_EXCEPTION_DEFAULT_STATUS_CODE': 200,
+    'API_PARAM_ERROR_STATUS_CODE': 200,
 
-ERROR_CODE_DEFINE = (
-    ('ERR_PAGE_SIZE_ERROR',          -1001,  '页码大小超限'),
+    'API_ERROR_CODES': (
+        ('ERR_WECHAT_LOGIN', (10001, '需要登录')),
 
-    ('ERR_WECHAT_LOGIN',             10001,  '需要登录'),
-
-    ('ERR_MEETING_ROOM_TIMEOVER',    20001,  '时间已过'),
-    ('ERR_MEETING_ROOM_INUSE',       20002,  '时间冲突'),
-)
+        ('ERR_MEETING_ROOM_TIMEOVER', (20001, '时间已过')),
+        ('ERR_MEETING_ROOM_INUSE', (20002, '时间冲突')),
+    )
+}

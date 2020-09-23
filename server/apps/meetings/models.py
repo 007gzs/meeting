@@ -5,11 +5,13 @@ from django.db import models
 
 from apps.wechat.models import User
 from core import utils
-from core.constants import DELETE_CODE
+from core.constants import DeleteCode
+from core.utils import admin_register
 
 from . import constants
 
 
+@admin_register(addable=False, changeable=False, list_display=['create_user', ])
 class Room(utils.BaseModel):
     name = models.CharField(verbose_name='名称', default='', max_length=64)
     description = models.CharField(verbose_name='描述', default='', max_length=255, blank=True)
@@ -22,6 +24,7 @@ class Room(utils.BaseModel):
         verbose_name = verbose_name_plural = "会议室"
 
 
+@admin_register(addable=False, changeable=False, list_display=['room', 'user'], list_filter=['room', ])
 class UserFollowRoom(utils.BaseModel):
     user = utils.ForeignKey(User, verbose_name='关注人', editable=False)
     room = utils.ForeignKey(Room, verbose_name='会议室', related_name='follows', editable=False)
@@ -31,6 +34,7 @@ class UserFollowRoom(utils.BaseModel):
         verbose_name = verbose_name_plural = "用户关注会议室"
 
 
+@admin_register(addable=False, changeable=False, list_display=['room', 'user'], list_filter=['date', 'room'])
 class Meeting(utils.BaseModel):
     name = models.CharField(verbose_name='名称', default='', max_length=64)
     description = models.CharField(verbose_name='描述', default='', max_length=255, blank=True)
@@ -43,13 +47,14 @@ class Meeting(utils.BaseModel):
     @property
     def attendees(self):
         return User.objects.filter(
-            meetingattendee__meeting_id=self.pk, meetingattendee__delete_status=DELETE_CODE.NORMAL.code
+            meetingattendee__meeting_id=self.pk, meetingattendee__delete_status=DeleteCode.NORMAL.code
         )
 
     class Meta:
         verbose_name = verbose_name_plural = "会议"
 
 
+@admin_register(addable=False, changeable=False, list_display=['meeting', 'user'])
 class MeetingAttendee(utils.BaseModel):
     meeting = utils.ForeignKey(Meeting, verbose_name='会议', editable=False)
     user = utils.ForeignKey(User, verbose_name='参与人', editable=False)
@@ -59,11 +64,12 @@ class MeetingAttendee(utils.BaseModel):
         verbose_name = verbose_name_plural = "参会人"
 
 
+@admin_register(addable=False, changeable=False, list_display=['meeting', 'user'], list_filter=['owner', 'type'])
 class MeetingTrace(utils.BaseModel):
     meeting = utils.ForeignKey(Meeting, verbose_name='会议')
     user = utils.ForeignKey(User, verbose_name='操作人')
     owner = models.BooleanField(verbose_name='是否发起人自己操作')
-    type = models.IntegerField(verbose_name='操作类型', choices=constants.MEETING_TRACE_TYPE_CODE.get_list())
+    type = models.IntegerField(verbose_name='操作类型', choices=constants.MeetingTraceTypeCode.get_choices_list())
     data = models.CharField(verbose_name='详细信息', max_length=4096, default='')
 
     class Meta:

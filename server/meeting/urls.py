@@ -19,25 +19,21 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf import settings
-from django.urls import include
-from django.conf.urls import url
+from django.urls import include, path
 from django.contrib import admin
 
-from core import utils
+from core.utils import get_api_js
 
 
 api_patterns = [
-    url(r'^wechat/', include("apps.wechat.views")),
-    url(r'^meeting/', include("apps.meetings.views")),
+    path('wechat/', include("apps.wechat.views")),
+    path('meeting/', include("apps.meetings.views")),
 ]
 
 urlpatterns = [
-    url(r'^grappelli/', include('grappelli.urls')),
-    url(r'^sysadmin/', admin.site.urls),
-    url(r'^api/', include(api_patterns)),
+    path('sysadmin/', admin.site.urls),
+    path('api/', include(api_patterns)),
 ]
 if settings.DEBUG:
-    urlpatterns.append(
-        url(r'^api.js$', utils.generate_api_js)
-    )
+    urlpatterns.append(path('api.js', get_api_js))
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
