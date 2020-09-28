@@ -1,6 +1,6 @@
 "use strict";
 const request = require('./request')
-const server = 'http://10.100.0.7:8001'; //服务地址
+const server = 'http://127.0.0.1:8000'; //服务地址
 
 const ERROR_CODE = {
   SUCCESS: 0, // 返回成功

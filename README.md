@@ -19,6 +19,9 @@
 
 ### 服务端配置
 
+
+服务端使用[Django](https://github.com/django/django) + [django-rest-framework](https://github.com/encode/django-rest-framework) + [django-cool](https://github.com/007gzs/django-cool) 框架开发
+
 #### 创建数据库
 
     CREATE SCHEMA `meeting` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
