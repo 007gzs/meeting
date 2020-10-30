@@ -31,6 +31,7 @@ api_patterns = [
 ]
 
 urlpatterns = [
+    path('cool/', include('cool.urls')),
     path('sysadmin/', admin.site.urls),
     path('api/', include(api_patterns)),
 ]
