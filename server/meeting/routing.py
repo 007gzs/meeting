@@ -14,10 +14,17 @@ class MeetingConsumer(CoolBFFAPIConsumer):
         return super().accept('apiview')
 
 
+def get_app():
+    if hasattr(MeetingConsumer, 'as_asgi'):
+        return MeetingConsumer.as_asgi()
+    else:
+        return MeetingConsumer
+
+
 application = ProtocolTypeRouter({
     'websocket': AuthMiddlewareStack(
         URLRouter(
-            [path('wsapi', MeetingConsumer)],
+            [path('wsapi', get_app())],
         )
     ),
 })
