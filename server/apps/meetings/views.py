@@ -117,7 +117,7 @@ class RoomBase(BaseView):
     class Meta:
         path = '/'
         param_fields = (
-            ('meeting_id', fields.IntegerField(label='会议ID')),
+            ('room_id', fields.IntegerField(label='会议室ID')),
         )
 
 
