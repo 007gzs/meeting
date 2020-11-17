@@ -6,6 +6,9 @@ const ApiViewWS = require('./apiviewws.js')
 let app = getApp()
 let apiViewWSs = {}
 const reconnectApiViews = (check_time) => {
+  if(!USE_WEBSOCKET){
+    return
+  }
   for(let i in apiViewWSs){
     apiViewWSs[i].check_and_reconnect(check_time)
   }
@@ -77,10 +80,14 @@ const wx_request = function (server, path, data, method, header, resolve, reject
       if (!isNaN(server_time)){
         app.globalData.timeDifference = server_time.getTime() - new Date().getTime()
       }
-      getApiViewWS(server, false).then(conn => {
-        conn.reconnect()
+      if(USE_WEBSOCKET){
+        getApiViewWS(server, false).then(conn => {
+          conn.reconnect()
+          check_res(res, server, path, data, method, header, resolve, reject, check_login)
+        })
+      }else{
         check_res(res, server, path, data, method, header, resolve, reject, check_login)
-      })
+      }
     },
     fail(res) {
       reject("网络错误")
