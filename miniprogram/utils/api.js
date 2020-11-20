@@ -1,22 +1,26 @@
 "use strict";
-const request = require('./request')
-const server = 'http://127.0.0.1:8000'; //服务地址
+const request = require('./request');
+const server = 'http://127.0.0.1:8000';
 
 const ERROR_CODE = {
   SUCCESS: 0, // 返回成功
-  ERR_UNKOWN: -1, // 未知错误
-  ERR_SYS_ERROR: -2, // 服务异常
-  ERR_COMMON_BAD_PARAM: -11, // 参数错误
-  ERR_COMMON_BAD_FORMAT: -12, // 格式错误
-  ERR_COMMON_PERMISSION: -13, // 权限错误
-  ERR_PAGE_SIZE_ERROR: -1001, // 页码大小超限
+  ERROR_UNKNOWN: -1, // 未知错误
+  ERROR_SYSTEM: -2, // 系统错误
+  ERROR_BAD_PARAMETER: -11, // 参数错误
+  ERROR_BAD_FORMAT: -12, // 格式错误
+  ERROR_PERMISSION: -13, // 权限错误
   ERR_WECHAT_LOGIN: 10001, // 需要登录
   ERR_MEETING_ROOM_TIMEOVER: 20001, // 时间已过
-  ERR_MEETING_ROOM_INUSE: 20002 // 时间冲突
+  ERR_MEETING_ROOM_INUSE: 20002, // 时间冲突
+  ERR_MEETING_ROOM_NOT_FOUND: 20003, // 会议室未找到
+  ERR_MEETING_NOT_FOUND: 20004 // 会议室未找到
 }
 
+
 // 小程序登录
-const api_wechat_login = function ({ js_code } = {}) {
+const api_wechat_login = function({
+  js_code // 小程序登录code
+} = {}) {
   return request({
     server: server,
     path: '/api/wechat/login',
@@ -28,12 +32,16 @@ const api_wechat_login = function ({ js_code } = {}) {
   })
 }
 
+
 // 小程序用户信息
-const api_wechat_user_info = function ({ encrypted_data, iv } = {}) {
+const api_wechat_user_info = function({
+  encrypted_data, // 完整用户信息的加密数据
+  iv // 加密算法的初始向量
+} = {}) {
   return request({
     server: server,
     path: '/api/wechat/user/info',
-    method: 'GET',
+    method: 'POST',
     data: {
       encrypted_data: encrypted_data,
       iv: iv
@@ -42,8 +50,9 @@ const api_wechat_user_info = function ({ encrypted_data, iv } = {}) {
   })
 }
 
+
 // 配置信息
-const api_meeting_config = function ({ } = {}) {
+const api_meeting_config = function() {
   return request({
     server: server,
     path: '/api/meeting/config',
@@ -53,8 +62,13 @@ const api_meeting_config = function ({ } = {}) {
   })
 }
 
+
 // 创建会议室
-const api_meeting_room_create = function ({ name, description, create_user_manager } = {}) {
+const api_meeting_room_create = function({
+  name, // 名称
+  description, // 描述
+  create_user_manager // 创建人管理权限
+} = {}) {
   return request({
     server: server,
     path: '/api/meeting/room/create',
@@ -68,8 +82,14 @@ const api_meeting_room_create = function ({ name, description, create_user_manag
   })
 }
 
+
 // 修改会议室
-const api_meeting_room_edit = function ({ room_id, name, description, create_user_manager } = {}) {
+const api_meeting_room_edit = function({
+  room_id, // 会议室ID
+  name, // 名称
+  description, // 描述
+  create_user_manager // 创建人管理权限
+} = {}) {
   return request({
     server: server,
     path: '/api/meeting/room/edit',
@@ -84,8 +104,11 @@ const api_meeting_room_edit = function ({ room_id, name, description, create_use
   })
 }
 
+
 // 删除会议室
-const api_meeting_room_delete = function ({ room_id } = {}) {
+const api_meeting_room_delete = function({
+  room_id // 会议室ID
+} = {}) {
   return request({
     server: server,
     path: '/api/meeting/room/delete',
@@ -97,8 +120,11 @@ const api_meeting_room_delete = function ({ room_id } = {}) {
   })
 }
 
+
 // 会议室信息
-const api_meeting_room_info = function ({ room_id } = {}) {
+const api_meeting_room_info = function({
+  room_id // 会议室ID
+} = {}) {
   return request({
     server: server,
     path: '/api/meeting/room/info',
@@ -110,8 +136,11 @@ const api_meeting_room_info = function ({ room_id } = {}) {
   })
 }
 
+
 // 关注会议室
-const api_meeting_room_follow = function ({ room_id } = {}) {
+const api_meeting_room_follow = function({
+  room_id // 会议室ID列表
+} = {}) {
   return request({
     server: server,
     path: '/api/meeting/room/follow',
@@ -123,8 +152,11 @@ const api_meeting_room_follow = function ({ room_id } = {}) {
   })
 }
 
+
 // 取消关注会议室
-const api_meeting_room_un_follow = function ({ room_id } = {}) {
+const api_meeting_room_un_follow = function({
+  room_id // 会议室ID
+} = {}) {
   return request({
     server: server,
     path: '/api/meeting/room/un/follow',
@@ -136,8 +168,9 @@ const api_meeting_room_un_follow = function ({ room_id } = {}) {
   })
 }
 
+
 // 已关注会议室列表
-const api_meeting_follow_rooms = function ({ } = {}) {
+const api_meeting_follow_rooms = function() {
   return request({
     server: server,
     path: '/api/meeting/follow/rooms',
@@ -147,8 +180,9 @@ const api_meeting_follow_rooms = function ({ } = {}) {
   })
 }
 
+
 // 创建会议室列表
-const api_meeting_create_rooms = function ({ } = {}) {
+const api_meeting_create_rooms = function() {
   return request({
     server: server,
     path: '/api/meeting/create/rooms',
@@ -158,8 +192,12 @@ const api_meeting_create_rooms = function ({ } = {}) {
   })
 }
 
+
 // 会议室预约列表
-const api_meeting_room_meetings = function ({ room_ids, date } = {}) {
+const api_meeting_room_meetings = function({
+  room_ids, // 会议室ID列表
+  date // 日期
+} = {}) {
   return request({
     server: server,
     path: '/api/meeting/room/meetings',
@@ -172,8 +210,11 @@ const api_meeting_room_meetings = function ({ room_ids, date } = {}) {
   })
 }
 
+
 // 我参与的会议列表
-const api_meeting_my_meetings = function ({ date } = {}) {
+const api_meeting_my_meetings = function({
+  date // 日期
+} = {}) {
   return request({
     server: server,
     path: '/api/meeting/my/meetings',
@@ -185,8 +226,16 @@ const api_meeting_my_meetings = function ({ date } = {}) {
   })
 }
 
+
 // 预约会议
-const api_meeting_reserve = function ({ room_id, name, description, date, start_time, end_time } = {}) {
+const api_meeting_reserve = function({
+  room_id, // 会议室ID
+  name, // 名称
+  description, // 描述
+  date, // 预定日期
+  start_time, // 开始时间
+  end_time // 结束时间
+} = {}) {
   return request({
     server: server,
     path: '/api/meeting/reserve',
@@ -203,8 +252,11 @@ const api_meeting_reserve = function ({ room_id, name, description, date, start_
   })
 }
 
+
 // 会议详情
-const api_meeting_info = function ({ meeting_id } = {}) {
+const api_meeting_info = function({
+  meeting_id // 会议ID
+} = {}) {
   return request({
     server: server,
     path: '/api/meeting/info',
@@ -216,8 +268,13 @@ const api_meeting_info = function ({ meeting_id } = {}) {
   })
 }
 
+
 // 会议修改
-const api_meeting_edit = function ({ meeting_id, name, description } = {}) {
+const api_meeting_edit = function({
+  meeting_id, // 会议ID
+  name, // 名称
+  description // 描述
+} = {}) {
   return request({
     server: server,
     path: '/api/meeting/edit',
@@ -231,8 +288,11 @@ const api_meeting_edit = function ({ meeting_id, name, description } = {}) {
   })
 }
 
+
 // 取消会议
-const api_meeting_cancel = function ({ meeting_id } = {}) {
+const api_meeting_cancel = function({
+  meeting_id // 会议ID
+} = {}) {
   return request({
     server: server,
     path: '/api/meeting/cancel',
@@ -244,8 +304,11 @@ const api_meeting_cancel = function ({ meeting_id } = {}) {
   })
 }
 
+
 // 参加会议
-const api_meeting_join = function ({ meeting_id } = {}) {
+const api_meeting_join = function({
+  meeting_id // 会议ID
+} = {}) {
   return request({
     server: server,
     path: '/api/meeting/join',
@@ -257,8 +320,11 @@ const api_meeting_join = function ({ meeting_id } = {}) {
   })
 }
 
+
 // 取消参加会议
-const api_meeting_leave = function ({ meeting_id } = {}) {
+const api_meeting_leave = function({
+  meeting_id // 会议ID
+} = {}) {
   return request({
     server: server,
     path: '/api/meeting/leave',
@@ -269,6 +335,7 @@ const api_meeting_leave = function ({ meeting_id } = {}) {
     header: { 'Content-Type': 'application/x-www-form-urlencoded' }
   })
 }
+
 
 module.exports = {
   ERROR_CODE: ERROR_CODE,
