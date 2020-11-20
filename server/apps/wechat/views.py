@@ -26,7 +26,7 @@ class Login(utils.APIBase):
         if login_user is None:
             raise CoolAPIException(ErrorCode.ERROR_BAD_PARAMETER)
         login(request, login_user)
-        return serializer.UserSerializer(wxa_user, request=request).data
+        return wxa_user
 
     class Meta:
         param_fields = (
@@ -61,7 +61,7 @@ class UserInfo(UserBaseView):
                 utils.exception_logging.exception("decrypt_message", extra={'request': request})
                 raise CoolAPIException(ErrorCode.ERROR_SYSTEM)
             request.user.set_info(data)
-        return serializer.UserSerializer(request.user, request=request).data
+        return request.user
 
     class Meta:
         param_fields = (

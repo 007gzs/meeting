@@ -88,7 +88,7 @@ class RoomCreate(BaseView):
         except Exception:
             utils.exception_logging.exception("get_wxa_code_unlimited_file", extra={'request': request})
         self.get_room_follow(room.pk, request.user.pk)
-        return serializer.RoomSerializer(room, request=request).data
+        return room
 
     class Meta:
         param_fields = (
@@ -103,9 +103,9 @@ class RoomBase(BaseView):
 
     def check_api_permissions(self, request, *args, **kwargs):
         super(RoomBase, self).check_api_permissions(request, *args, **kwargs)
-        room = models.Room.objects.filter(pk=request.params.room_id).first()
+        room = models.Room.get_obj_by_pk_from_cache(request.params.room_id)
         if room is None:
-            raise CoolAPIException(ErrorCode.ERROR_BAD_PARAMETER)
+            raise CoolAPIException(ErrorCode.ERR_MEETING_ROOM_NOT_FOUND)
         setattr(self, 'room', room)
         if self.check_manager:
             if room.create_user_id != request.user.pk:
@@ -135,7 +135,7 @@ class RoomEdit(RoomBase):
             self.room.create_user_manager = request.params.create_user_manager
             update_fields.append('create_user_manager')
         self.room.save(force_update=True, update_fields=update_fields)
-        return serializer.RoomSerializer(self.room, request=request).data
+        return self.room
 
     class Meta:
         param_fields = (
@@ -161,7 +161,7 @@ class RoomInfo(RoomBase):
     response_info_serializer_class = serializer.RoomDetailSerializer
 
     def get_context(self, request, *args, **kwargs):
-        return serializer.RoomDetailSerializer(self.room, request=request).data
+        return self.room
 
 
 @site
@@ -205,10 +205,9 @@ class FollowRooms(BaseView):
     response_many = True
 
     def get_context(self, request, *args, **kwargs):
-        rooms = models.Room.objects.filter(
+        return models.Room.objects.filter(
             follows__user_id=request.user.pk, follows__delete_status=core_constants.DeleteCode.NORMAL.code
         )
-        return serializer.RoomSerializer(rooms, request=request, many=True).data
 
 
 @site
@@ -218,8 +217,7 @@ class CreateRooms(BaseView):
     response_many = True
 
     def get_context(self, request, *args, **kwargs):
-        rooms = models.Room.objects.filter(create_user_id=request.user.pk)
-        return serializer.RoomSerializer(rooms, request=request, many=True).data
+        return models.Room.objects.filter(create_user_id=request.user.pk)
 
 
 @site
@@ -337,7 +335,7 @@ class Reserve(BaseView):
                 meeting_id=meeting.pk
             )
         self.get_room_follow(request.params.room_id, request.user.pk)
-        return serializer.MeetingDetailSerializer(meeting, request=request).data
+        return meeting
 
     class Meta:
         param_fields = (
@@ -356,9 +354,9 @@ class MeetingBase(BaseView):
 
     def check_api_permissions(self, request, *args, **kwargs):
         super(MeetingBase, self).check_api_permissions(request, *args, **kwargs)
-        meeting = models.Meeting.objects.filter(pk=request.params.meeting_id).first()
+        meeting = models.Meeting.get_obj_by_pk_from_cache(request.params.meeting_id)
         if meeting is None:
-            raise CoolAPIException(ErrorCode.ERROR_BAD_PARAMETER)
+            raise CoolAPIException(ErrorCode.ERR_MEETING_NOT_FOUND)
         setattr(self, 'meeting', meeting)
         if self.check_manager:
             if meeting.user_id != request.user.pk and (
@@ -381,7 +379,7 @@ class Info(MeetingBase):
     name = "会议详情"
 
     def get_context(self, request, *args, **kwargs):
-        return serializer.MeetingDetailSerializer(self.meeting, request=request).data
+        return self.meeting
 
 
 @site
@@ -410,7 +408,7 @@ class Edit(MeetingBase):
                     type=constants.MeetingTraceTypeCode.EDIT.code,
                     data=json.dumps(data, ensure_ascii=False)
                 )
-        return serializer.MeetingDetailSerializer(self.meeting, request=request).data
+        return self.meeting
 
     class Meta:
         param_fields = (
@@ -448,7 +446,7 @@ class Join(MeetingBase):
         )
         attendee.un_delete()
         self.get_room_follow(self.meeting.room_id, request.user.pk)
-        return serializer.MeetingDetailSerializer(self.meeting, request=request).data
+        return self.meeting
 
 
 @site
@@ -463,7 +461,7 @@ class Leave(MeetingBase):
         if attendee is None:
             raise CoolAPIException(ErrorCode.ERROR_BAD_PARAMETER)
         attendee.delete()
-        return serializer.MeetingDetailSerializer(self.meeting, request=request).data
+        return self.meeting
 
 
 urlpatterns = site.urlpatterns
