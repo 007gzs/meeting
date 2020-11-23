@@ -11,7 +11,12 @@ Page({
     show_home: false,
     owner: false,
     info: {},
-    meetings: []
+    meetings: [],
+    history_view: false,
+    history_start: '',
+    history_end: '',
+    history_limit_start: '',
+    history_limit_end: '',
   },
   refresh: function () {
 
@@ -21,13 +26,25 @@ Page({
         this.setData({ owner: res.id == this.data.info.create_user })
       })
     })
-    app.api.api_meeting_room_meetings({
-      room_ids: this.data.room_id,
-      date: this.selectComponent("#date_select").data.select_date
-    }).then(res => {
-      this.selectComponent("#date_select").setDateRange(res.start_date, res.end_date)
-      this.setData({ meetings: res.meetings })
-    })
+    if(this.data.history_view){
+      app.api.api_meeting_history_meetings({
+        room_id: this.data.room_id,
+        start_date: this.data.history_start,
+        end_date: this.data.history_end
+      })
+    }else{
+      app.api.api_meeting_room_meetings({
+        room_ids: this.data.room_id,
+        date: this.selectComponent("#date_select").data.select_date
+      }).then(res => {
+        this.selectComponent("#date_select").setDateRange(res.start_date, res.end_date)
+        this.setData({
+          meetings: res.meetings,
+          history_limit_start: res.history_start_date,
+          history_limit_end: res.history_end_date
+        })
+      })
+    }
   },
   hide_qrcode: function () {
     this.setData({
@@ -45,6 +62,24 @@ Page({
   },
   home: function(){
     app.gotoHome()
+  },
+  change_history: function(){
+    this.setData({
+      history_view: !this.data.history_view
+    })
+    this.refresh()
+  },
+  change_history_start: function(e){
+    this.setData({
+      history_start: e.detail.value
+    })
+    this.refresh()
+  },
+  change_history_end: function(e){
+    this.setData({
+      history_end: e.detail.value
+    })
+    this.refresh()
   },
   date_select_change: function (e) {
     this.refresh()
@@ -89,11 +124,27 @@ Page({
       url: '../meeting/detail?meeting_id=' + e.currentTarget.id
     })
   },
+  formatNumber: function(n) {
+    n = n.toString()
+    return n[1] ? n : '0' + n
+  },
+  dateId: function(date){
+    const year = date.getFullYear()
+    const month = date.getMonth() + 1
+    const day = date.getDate()
+    return [year, month, day].map(this.formatNumber).join('-')
+  },
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    this.setData({ show_home: getCurrentPages().length == 1 })
+    let now = app.nowDate()
+    this.setData({
+      show_home: getCurrentPages().length == 1,
+      history_end: this.dateId(now),
+      history_start: this.dateId(new Date(now.setDate(now.getDate() - 7)))
+
+    })
     const scene = decodeURIComponent(options.scene)
     let room_id = ''
     scene.split("&").map(s => {

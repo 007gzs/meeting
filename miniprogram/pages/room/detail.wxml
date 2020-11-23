@@ -7,14 +7,32 @@
         <view class="page__title">{{info.name}}</view>
         <view class="page__desc">{{info.description}}</view>
       </view>
-      <view class="weui-cell__ft" wx:if="{{show_home}}">
-        <button class="weui-btn" size="mini" bindtap='home'>返回首页</button>
+      <view class="weui-cell__ft">
+        <button class="weui-btn" size="mini" bindtap='change_history' wx:if="{{owner}}">
+          <block wx:if="{{history_view}}">返回</block>
+          <block wx:else>查看历史</block>
+        </button>
+        <button class="weui-btn" size="mini" bindtap='home' style="margin-left:10px" wx:if="{{show_home}}">返回首页</button>
       </view>
     </view>
   </view>
-
-  <date_select id="date_select" bindchange="date_select_change"></date_select>
-  <view class="page_bd page__bd_spacing body-with-footer">
+  <block wx:if="{{history_view}}">
+  	<view class="weui-flex">
+			<view class="weui-flex__item" style="text-align:right">
+        <picker value="{{history_start}}" mode="date" bindchange="change_history_start" start="{{history_limit_start}}" end="{{history_end}}">
+          <input class="weui-input" value="{{history_start}}" disabled="true"></input>
+        </picker>
+      </view>
+      <view class="weui-flex__item" style="display: flex;justify-content: center;align-items: center;">至</view>
+			<view class="weui-flex__item" style="text-align:left">
+        <picker value="{{history_end}}" mode="date" bindchange="change_history_end" start="{{history_start}}" end="{{history_limit_end}}">
+          <input class="weui-input" value="{{history_end}}" disabled="true"></input>
+        </picker>
+      </view>
+		</view>
+  </block>
+  <date_select id="date_select" bindchange="date_select_change" wx:else></date_select>
+  <view class="page_bd page__bd_spacing {{history_view?'':'body-with-footer'}}">
     <block wx:for="{{meetings}}" wx:key="id">
       <view class='meeting-item weui-form-preview' id="{{item.id}}" bindtap='detail'>
         <view class="weui-form-preview__hd">
@@ -37,7 +55,7 @@
     </block>
   </view>
   
-  <view class="weui-footer footer">
+  <view class="weui-footer footer" wx:if="{{!history_view}}">
     <view class="weui-flex">
       <view class="weui-flex__item">
         <button size="mini" open-type="share">分享</button>

@@ -36,7 +36,9 @@ class BaseView(UserBaseView):
             'start_time': '开始时间',
             'end_time': '结束时间',
             'start_date': '开始日期',
-            'end_date': '结束日期'
+            'end_date': '结束日期',
+            'history_start_date': '历史开始日期',
+            'history_end_date': '历史结束日期'
         }
 
     @staticmethod
@@ -46,7 +48,9 @@ class BaseView(UserBaseView):
             'start_time': config.RESERVE_START_TIME,
             'end_time': config.RESERVE_END_TIME,
             'start_date': today,
-            'end_date': today + datetime.timedelta(days=config.SELECT_DATE_DAYS)
+            'end_date': today + datetime.timedelta(days=config.SELECT_DATE_DAYS),
+            'history_start_date': today - datetime.timedelta(days=config.MAX_HISTORY_DAYS),
+            'history_end_date': today
         }
 
     def get_context(self, request, *args, **kwargs):
@@ -255,6 +259,35 @@ class RoomMeetings(BaseView):
         param_fields = (
             ('room_ids', SplitCharField(label='会议室ID列表', sep=',', child=fields.IntegerField())),
             ('date', utils.DateField(label='日期', required=False, default=None)),
+        )
+
+
+@site
+class HistoryMeetings(BaseView):
+    name = "会议室预约历史"
+
+    @classmethod
+    def response_info_data(cls):
+        from cool.views.utils import get_serializer_info
+        ret = cls.response_info_date_time_settings()
+        ret.update({'meetings': get_serializer_info(serializer.MeetingSerializer(), True)})
+        return ret
+
+    def get_context(self, request, *args, **kwargs):
+        meetings = models.Meeting.objects.filter(
+            room_id=request.params.room_id,
+            date__gte=request.params.start_date,
+            date__lte=request.params.end_date
+        ).order_by('start_time')
+        ret = self.get_date_time_settings()
+        ret.update({'meetings': serializer.MeetingSerializer(meetings, request=request, many=True).data})
+        return ret
+
+    class Meta:
+        param_fields = (
+            ('room_id', fields.IntegerField(label='会议室ID')),
+            ('start_date', utils.DateField(label='开始日期')),
+            ('end_date', utils.DateField(label='结束日期')),
         )
 
 
