@@ -278,7 +278,7 @@ class HistoryMeetings(BaseView):
             room_id=request.params.room_id,
             date__gte=request.params.start_date,
             date__lte=request.params.end_date
-        ).order_by('start_time')
+        ).order_by('data', 'start_time')
         ret = self.get_date_time_settings()
         ret.update({'meetings': serializer.MeetingSerializer(meetings, request=request, many=True).data})
         return ret
