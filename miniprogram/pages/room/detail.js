@@ -12,11 +12,6 @@ Page({
     owner: false,
     info: {},
     meetings: [],
-    history_view: false,
-    history_start: '',
-    history_end: '',
-    history_limit_start: '',
-    history_limit_end: '',
   },
   refresh: function () {
 
@@ -26,25 +21,17 @@ Page({
         this.setData({ owner: res.id == this.data.info.create_user })
       })
     })
-    if(this.data.history_view){
-      app.api.api_meeting_history_meetings({
-        room_id: this.data.room_id,
-        start_date: this.data.history_start,
-        end_date: this.data.history_end
+    app.api.api_meeting_room_meetings({
+      room_ids: this.data.room_id,
+      date: this.selectComponent("#date_select").data.select_date
+    }).then(res => {
+      this.selectComponent("#date_select").setDateRange(res.start_date, res.end_date)
+      this.setData({
+        meetings: res.meetings,
+        history_limit_start: res.history_start_date,
+        history_limit_end: res.history_end_date
       })
-    }else{
-      app.api.api_meeting_room_meetings({
-        room_ids: this.data.room_id,
-        date: this.selectComponent("#date_select").data.select_date
-      }).then(res => {
-        this.selectComponent("#date_select").setDateRange(res.start_date, res.end_date)
-        this.setData({
-          meetings: res.meetings,
-          history_limit_start: res.history_start_date,
-          history_limit_end: res.history_end_date
-        })
-      })
-    }
+    })
   },
   hide_qrcode: function () {
     this.setData({
@@ -63,30 +50,17 @@ Page({
   home: function(){
     app.gotoHome()
   },
-  change_history: function(){
-    this.setData({
-      history_view: !this.data.history_view
-    })
-    this.refresh()
-  },
-  change_history_start: function(e){
-    this.setData({
-      history_start: e.detail.value
-    })
-    this.refresh()
-  },
-  change_history_end: function(e){
-    this.setData({
-      history_end: e.detail.value
-    })
-    this.refresh()
-  },
   date_select_change: function (e) {
     this.refresh()
   },
   reserve: function(){
     wx.navigateTo({
       url: '../meeting/reserve?room_ids=' + this.data.room_id + "&date=" + this.selectComponent("#date_select").data.select_date
+    })
+  },
+  history: function(){
+    wx.navigateTo({
+      url: '../room/history?room_id=' + this.data.room_id
     })
   },
   unfollow: function(){

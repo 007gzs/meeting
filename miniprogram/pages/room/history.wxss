@@ -1,0 +1,9 @@
+/* pages/room/history.wxss */
+.history .page_bd .weui-cell{
+  background-color: #eeeeee;
+}
+.history .flag{
+  padding-top: 30rpx;
+  padding-left: 30rpx;
+  font-weight: bold;
+}

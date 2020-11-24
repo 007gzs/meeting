@@ -1,0 +1,38 @@
+<wxs module="timeUtils" src="../../utils/timeUtils.wxs"></wxs>
+<view class="page history">
+  <view class="page__hd">
+    <view class='weui-cell'>
+      <view class='weui-cell__bd'>
+        <view class="page__title">{{info.name}}</view>
+        <view class="page__desc">{{info.description}}</view>
+      </view>
+    </view>
+  </view>
+  <view class="weui-flex">
+    <view class="weui-flex__item" style="text-align:right">
+      <picker value="{{history_start}}" mode="date" bindchange="change_history_start" start="{{history_limit_start}}" end="{{history_end}}">
+        <input class="weui-input" value="{{history_start}}" disabled="true"></input>
+      </picker>
+    </view>
+    <view class="weui-flex__item" style="display: flex;justify-content: center;align-items: center;">至</view>
+    <view class="weui-flex__item" style="text-align:left">
+      <picker value="{{history_end}}" mode="date" bindchange="change_history_end" start="{{history_start}}" end="{{history_limit_end}}">
+        <input class="weui-input" value="{{history_end}}" disabled="true"></input>
+      </picker>
+    </view>
+  </view>
+
+  <view class="page_bd page__bd_spacing">
+    <view class='weui-cells'>
+      <block wx:for="{{meetings}}" wx:key="id">
+        <view class="flag" wx:if="{{index == 0 || meetings[index-1].date != item.date}}">{{item.date}}</view>
+        <view class="weui-cell weui-cell_access" bindtap='detail' hover-class="weui-cell_active" id="{{item.id}}">
+          <view class="weui-cell__bd">{{item.name}}</view>
+          <view class="weui-cell__ft">{{timeUtils.formatTime(item.start_time)}} - {{timeUtils.formatTime(item.end_time)}}</view>
+        </view>
+      </block>
+    </view>
+  </view>
+  
+  
+</view>
