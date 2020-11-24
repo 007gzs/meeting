@@ -97,8 +97,8 @@ class RoomCreate(BaseView):
     class Meta:
         param_fields = (
             ('name', fields.CharField(label='名称', max_length=64)),
-            ('description', fields.CharField(label='描述', max_length=255)),
-            ('create_user_manager', fields.BooleanField(label='创建人管理权限', required=False, default=False)),
+            ('description', fields.CharField(label='描述', max_length=255, allow_blank=True, default="")),
+            ('create_user_manager', fields.BooleanField(label='创建人管理权限', default=False)),
         )
 
 
@@ -144,8 +144,8 @@ class RoomEdit(RoomBase):
     class Meta:
         param_fields = (
             ('name', fields.CharField(label='名称', max_length=64)),
-            ('description', fields.CharField(label='描述', max_length=255, required=False, default="")),
-            ('create_user_manager', fields.NullBooleanField(label='创建人管理权限', required=False, default=None)),
+            ('description', fields.CharField(label='描述', max_length=255, allow_blank=True, default="")),
+            ('create_user_manager', fields.NullBooleanField(label='创建人管理权限', default=None)),
         )
 
 
@@ -258,7 +258,7 @@ class RoomMeetings(BaseView):
     class Meta:
         param_fields = (
             ('room_ids', SplitCharField(label='会议室ID列表', sep=',', child=fields.IntegerField())),
-            ('date', utils.DateField(label='日期', required=False, default=None)),
+            ('date', utils.DateField(label='日期', default=None)),
         )
 
 
@@ -324,7 +324,7 @@ class MyMeetings(BaseView):
 
     class Meta:
         param_fields = (
-            ('date', utils.DateField(label='日期', required=False, default=None)),
+            ('date', utils.DateField(label='日期', default=None)),
         )
 
 
@@ -374,7 +374,7 @@ class Reserve(BaseView):
         param_fields = (
             ('room_id', fields.IntegerField(label='会议室ID')),
             ('name', fields.CharField(label='名称', max_length=64)),
-            ('description', fields.CharField(label='描述', max_length=255, required=False, default="")),
+            ('description', fields.CharField(label='描述', max_length=255, allow_blank=True, default="")),
             ('date', fields.DateField(label='预定日期')),
             ('start_time', fields.TimeField(label='开始时间')),
             ('end_time', fields.TimeField(label='结束时间')),
@@ -446,7 +446,7 @@ class Edit(MeetingBase):
     class Meta:
         param_fields = (
             ('name', fields.CharField(label='名称', max_length=64)),
-            ('description', fields.CharField(label='描述', max_length=255, required=False, default="")),
+            ('description', fields.CharField(label='描述', max_length=255, allow_blank=True, default="")),
         )
 
 

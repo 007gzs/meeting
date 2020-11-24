@@ -36,6 +36,13 @@ Page({
     })
   },
   save: function() {
+    if(!this.data.name.trim()){
+      wx.showToast({
+        icon: 'none',
+        title: '请输入名称',
+      })
+      return
+    }
     wx.showLoading({
       mask: true,
       title: '加载中...',
