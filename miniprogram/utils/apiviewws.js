@@ -72,6 +72,7 @@ const ApiViewWS = function (ws_path, common_listener) {
       protocols: ["apiview"],
       method: "GET",
       success: res => {
+        console.log("ws connectSocket success", res)
       },
       fail: res => {
         console.log("ws connectSocket fail", res)
@@ -112,6 +113,7 @@ const ApiViewWS = function (ws_path, common_listener) {
       this._proc_data(data)
     })
     this.task.onOpen(res => {
+      console.log("ws onOpen", res)
       this.task_status = TASK_STATUS.OK
       if (this.showLoading) {
         this.showLoading = false
@@ -122,7 +124,6 @@ const ApiViewWS = function (ws_path, common_listener) {
   }
   this.connect = () => {
     return new Promise((resolve, reject) => {
-      //console.log("connect", this.task_status, this.task)
       if (this.task_status === TASK_STATUS.OK){
         if (this.task.readyState === 1){
           resolve(this)
@@ -139,12 +140,14 @@ const ApiViewWS = function (ws_path, common_listener) {
     
   }
   this.close = () => {
+    console.log("ws close")
     this.task_status = TASK_STATUS.CLOSEING
     if(this.task){
       this.task.close()
     }
   }
   this.reconnect = () => {
+    console.log("ws reconnect")
     this.task_status = TASK_STATUS.RECONNECTING
     if(this.task){
       this.task.close()
