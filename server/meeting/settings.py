@@ -368,6 +368,8 @@ DJANGO_COOL = {
         ('ERR_MEETING_ROOM_TIMEOVER', (20001, '时间已过')),
         ('ERR_MEETING_ROOM_INUSE', (20002, '时间冲突')),
         ('ERR_MEETING_ROOM_NOT_FOUND', (20003, '会议室未找到')),
-        ('ERR_MEETING_NOT_FOUND', (20004, '会议室未找到')),
+        ('ERR_MEETING_NOT_FOUND', (20004, '会议未找到')),
+        ('ERR_MEETING_FINISHED', (20005, '会议已结束')),
+
     )
 }

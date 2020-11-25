@@ -263,8 +263,9 @@ class RoomMeetings(BaseView):
 
 
 @site
-class HistoryMeetings(BaseView):
+class HistoryMeetings(RoomBase):
     name = "会议室预约历史"
+    check_manager = True
 
     @classmethod
     def response_info_data(cls):
@@ -275,7 +276,7 @@ class HistoryMeetings(BaseView):
 
     def get_context(self, request, *args, **kwargs):
         meetings = models.Meeting.objects.filter(
-            room_id=request.params.room_id,
+            room_id=self.room.pk,
             date__gte=request.params.start_date,
             date__lte=request.params.end_date
         ).order_by('date', 'start_time')
@@ -285,7 +286,6 @@ class HistoryMeetings(BaseView):
 
     class Meta:
         param_fields = (
-            ('room_id', fields.IntegerField(label='会议室ID')),
             ('start_date', utils.DateField(label='开始日期')),
             ('end_date', utils.DateField(label='结束日期')),
         )
@@ -383,6 +383,7 @@ class Reserve(BaseView):
 
 class MeetingBase(BaseView):
     check_manager = False
+    check_meeting_time = True
     response_info_serializer_class = serializer.MeetingDetailSerializer
 
     def check_api_permissions(self, request, *args, **kwargs):
@@ -396,6 +397,9 @@ class MeetingBase(BaseView):
                     not meeting.room.create_user_manager or request.user.pk != meeting.room.create_user_id
             ):
                 raise CoolAPIException(ErrorCode.ERROR_PERMISSION)
+        if self.check_meeting_time:
+            if datetime.datetime.combine(meeting.date, meeting.end_time) < datetime.datetime.now():
+                raise CoolAPIException(ErrorCode.ERR_MEETING_FINISHED)
 
     def get_context(self, request, *args, **kwargs):
         raise NotImplementedError
@@ -410,6 +414,7 @@ class MeetingBase(BaseView):
 @site
 class Info(MeetingBase):
     name = "会议详情"
+    check_meeting_time = False
 
     def get_context(self, request, *args, **kwargs):
         return self.meeting
