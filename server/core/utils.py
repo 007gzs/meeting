@@ -172,7 +172,7 @@ class APIBase(CoolBFFAPIView):
 
     def log_exception(self, request, exc, context):
         super().log_exception(request, exc, context)
-        exception_logging.exception(exc.message, exc_info=exc, extra={'request': request})
+        exception_logging.exception(str(exc), exc_info=exc, extra={'request': request})
 
     class Meta:
         path = '/'
