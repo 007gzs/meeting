@@ -72,10 +72,8 @@ const ApiViewWS = function (ws_path, common_listener) {
       protocols: ["apiview"],
       method: "GET",
       success: res => {
-        console.log("ws connectSocket success", res)
       },
       fail: res => {
-        console.log("ws connectSocket fail", res)
         this._connects_callback(1, "网络错误")
         if (this.showLoading){
           this.showLoading = false
@@ -84,7 +82,6 @@ const ApiViewWS = function (ws_path, common_listener) {
       }
     })
     this.task.onClose(res => {
-      console.log("ws onClose", res)
       this._failall()
       if (this.task_status === TASK_STATUS.RECONNECTING) {
         //this._new_task()
@@ -94,7 +91,6 @@ const ApiViewWS = function (ws_path, common_listener) {
       }
     })
     this.task.onError(res => {
-      console.log("ws onError", res)
       this.task_status = TASK_STATUS.ERROR
       if (this.showLoading) {
         this.showLoading = false
@@ -104,16 +100,9 @@ const ApiViewWS = function (ws_path, common_listener) {
       this._connects_callback(1, "网络错误")
     })
     this.task.onMessage(res => {
-      let data = JSON.parse(res.data)
-      if(data && data.status_code && data.reqid){
-        console.log("ws onMessage", data.reqid, data.status_code, data.data && data.data.code)
-      }else{
-        console.log("ws onMessage", res)
-      }
-      this._proc_data(data)
+      this._proc_data(JSON.parse(res.data))
     })
     this.task.onOpen(res => {
-      console.log("ws onOpen", res)
       this.task_status = TASK_STATUS.OK
       if (this.showLoading) {
         this.showLoading = false
@@ -140,14 +129,12 @@ const ApiViewWS = function (ws_path, common_listener) {
     
   }
   this.close = () => {
-    console.log("ws close")
     this.task_status = TASK_STATUS.CLOSEING
     if(this.task){
       this.task.close()
     }
   }
   this.reconnect = () => {
-    console.log("ws reconnect")
     this.task_status = TASK_STATUS.RECONNECTING
     if(this.task){
       this.task.close()
@@ -170,13 +157,11 @@ const ApiViewWS = function (ws_path, common_listener) {
     }
     this.listenerList[reqid] = listener
     const req_data = { path: path, reqid: reqid, data: data }
-    console.log("ws send", reqid, path)
     this.task.send({
       data: JSON.stringify(req_data),
       success: res => {
       },
       fail: res => {
-        console.log("ws send fail", reqid, path)
         listener(false, {})
       }
     })

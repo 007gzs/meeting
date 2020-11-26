@@ -26,7 +26,6 @@ const getApiViewWS = (server, need_connect) => {
     apiViewWSs[ws_path].connect().then(res => {
       resolve(apiViewWSs[ws_path])
     }).catch(res => {
-      console.log("ws error", res)
       reject(res)
     })
   })
@@ -68,14 +67,12 @@ const wx_request = function (server, path, data, method, header, resolve, reject
   const url = server + path
   header['Cookie'] = httpCookie.getCookieForReq()
   const reqid = "req_" + parseInt(Math.random() * 9000000000 + 1000000000)
-  console.log("req send", reqid, path)
   wx.request({
     url: url,
     data: data,
     method: method,
     header: header,
     success(res) {
-      console.log("req success", reqid, res.statusCode, res.data.code)
       httpCookie.setCookieByHead(res.header)
       if(app === undefined){
         app = getApp()
@@ -96,7 +93,6 @@ const wx_request = function (server, path, data, method, header, resolve, reject
       }
     },
     fail(res) {
-      console.log("req fail", reqid, path, res)
       reject("网络错误")
     },
     complete() {

@@ -85,7 +85,6 @@ Page({
   adLoad: function (options) {
   },
   adError: function (options) {
-    console.log("adError", options)
     this.setData({ show_ad: false})
   },
   adClose: function (options) {
