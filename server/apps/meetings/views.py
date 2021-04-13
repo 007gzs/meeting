@@ -4,7 +4,7 @@ from __future__ import absolute_import, unicode_literals
 import datetime
 import json
 
-from cool.views import ViewSite, CoolAPIException, ErrorCode
+from cool.views import ViewSite, CoolAPIException, ErrorCode, mixins
 from cool.views.fields import SplitCharField
 from rest_framework import fields
 from constance import config
@@ -73,33 +73,25 @@ class Config(BaseView):
 
 
 @site
-class RoomCreate(BaseView):
-    name = "创建会议室"
+class RoomCreate(mixins.AddMixin, BaseView):
+    model = models.Room
     response_info_serializer_class = serializer.RoomSerializer
+    add_fields = ['name', 'description', 'create_user_manager']
 
-    def get_context(self, request, *args, **kwargs):
-        room = models.Room.objects.create(
-            name=request.params.name,
-            description=request.params.description,
-            create_user_id=request.user.pk,
-            create_user_manager=request.params.create_user_manager
-        )
+    def init_fields(self, request, obj):
+        obj.create_user_id = request.user.pk
+        super().init_fields(request, obj)
+
+    def save_obj(self, request, obj):
+        super().save_obj(request, obj)
         try:
-            room.qr_code = biz.get_wxa_code_unlimited_file(
-                "room_%d.jpg" % room.pk, scene="room_id=%d" % room.pk, page="pages/room/detail"
+            obj.qr_code = biz.get_wxa_code_unlimited_file(
+                "room_%d.jpg" % obj.pk, scene="room_id=%d" % obj.pk, page="pages/room/detail"
             )
-            room.save(update_fields=['qr_code', ], force_update=True)
+            obj.save(update_fields=['qr_code', ], force_update=True)
         except Exception:
             utils.exception_logging.exception("get_wxa_code_unlimited_file", extra={'request': request})
-        self.get_room_follow(room.pk, request.user.pk)
-        return room
-
-    class Meta:
-        param_fields = (
-            ('name', fields.CharField(label='名称', max_length=64)),
-            ('description', fields.CharField(label='描述', max_length=255, allow_blank=True, default="")),
-            ('create_user_manager', fields.BooleanField(label='创建人管理权限', default=False)),
-        )
+        self.get_room_follow(obj.pk, request.user.pk)
 
 
 class RoomBase(BaseView):
