@@ -15,3 +15,4 @@ django-redis-cache
 djangorestframework
 django-cool>=1.0
 wechatpy
+urllib3>=2.2.2 # not directly required, pinned by Snyk to avoid a vulnerability
