@@ -6,7 +6,7 @@ hiredis
 gevent
 celery
 requests
-django>=2.2
+django>=4.2.20
 channels>=2.4
 channels_redis
 django-constance
