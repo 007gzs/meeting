@@ -339,12 +339,13 @@ class Reserve(BaseView):
             raise CoolAPIException(ErrorCode.ERR_MEETING_ROOM_TIMEOVER)
 
         with transaction.atomic():
+            models.Room.objects.filter(id=request.params.room_id).select_for_update()  # 并发预约时按照会议室进行加锁
             if models.Meeting.objects.filter(room_id=request.params.room_id, date=request.params.date).filter(
                     (Q(start_time__lte=request.params.start_time) & Q(end_time__gt=request.params.start_time))
                     | (Q(start_time__lt=request.params.end_time) & Q(end_time__gte=request.params.end_time))
                     | (Q(start_time__lte=request.params.start_time) & Q(start_time__gt=request.params.end_time))
                     | (Q(end_time__lt=request.params.start_time) & Q(end_time__gte=request.params.end_time))
-            ).select_for_update().exists():
+            ).exists():
                 raise CoolAPIException(ErrorCode.ERR_MEETING_ROOM_INUSE)
             meeting = models.Meeting.objects.create(
                 user_id=request.user.pk,
