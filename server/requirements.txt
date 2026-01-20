@@ -15,3 +15,4 @@ django-redis-cache
 djangorestframework
 django-cool>=1.0
 wechatpy
+sqlparse>=0.5.0 # not directly required, pinned by Snyk to avoid a vulnerability
